@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
     return (
@@ -16,7 +16,9 @@ const Navbar = () => {
 
             <div className="hidden md:flex gap-6 text-sm text-slate-30">
                 <a href="#" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]transition-all duration-300">About</a>
-                <a href="#" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]transition-all duration-300">dashboard</a>
+                <Link to="/dashboard" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">
+                    Dashboard
+                </Link>
                 <a href="#" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]transition-all duration-300">Scholarships</a>
                 <a href="#" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]transition-all duration-300">FAQ</a>
             </div>
