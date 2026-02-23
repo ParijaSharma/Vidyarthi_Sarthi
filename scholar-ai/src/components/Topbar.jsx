@@ -5,13 +5,13 @@ import {
 } from "lucide-react";
 export default function Topbar() {
     return (
-        <header className="w-full h-20 flex items-center justify-between px-6 border-b border-gray-300 bg-white">
-            <div className="relative mb-6">
+        <header className="w-full h-18 flex items-center justify-between px-6 border-b border-gray-300 bg-white">
+            <div className="relative w-2/3 mt-3 mb-5">
             <Search className="absolute left-4 top-3 text-gray-400" size={18}/>
             <input
             type="text"
             placeholder="Search Category and Skills"
-            className="w-full pl-10 pr-4 py-3 rounded-xl border 
+            className="w-full pl-10 py-3 rounded-xl border 
                      focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
       </div>

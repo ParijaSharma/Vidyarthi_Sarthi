@@ -3,6 +3,7 @@ import Navbar from "./components/navbar";
 import Hero from "./components/hero";
 import AuthPanel from "./components/authPanel";
 import Dashboard from "./pages/dashboard";
+import Questions from "./pages/questions";
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -39,11 +40,13 @@ function LandingPage() {
 /* Main App Router */
 function App() {
   return (
-
+ 
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/questions" element={<Questions />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
+  
     
   );
 }

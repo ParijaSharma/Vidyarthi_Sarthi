@@ -16,7 +16,7 @@ export default function Sidebar() {
         <aside className="w-64 min-h-screen bg-white shadow-lg p-6">
             
             {/* LOGO AREA */}
-            <div className="flex items-center gap-3 mb-8 border-b w-full pb-3">
+            <div className="flex items-center gap-3 mb-8 border-b w-full pb-2">
                 <div className="w-10 h-10 rounded-xl 
                                 bg-gradient-to-br from-yellow-300 to-yellow-500
                                 flex items-center justify-center shadow-md">
@@ -29,7 +29,7 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            <nav className="space-y-3">
+            <nav className="space-y-2.5">
                 <SidebarItem icon={<LayoutDashboard size={18}/>} label="Overview" />
                 <SidebarItem icon={<User size={18}/>} label="Profile" />    
                 <SidebarItem icon={<Sparkles size={18}/>} label="AI chat" />    
