@@ -1,15 +1,12 @@
-import { Search, User } from "lucide-react";
+import { Search } from "lucide-react";
 
-export default function ScholarshipSection({ userProfile }) {
+export default function ScholarshipSection() {
   return (
-    <div className="p-4">
+    <div className="p-6">
 
       {/* Title */}
       <h2 className="text-2xl font-semibold mb-4">
-        {userProfile
-        ?`Scholarships for ${userProfile.stream} students aiming for ${userProfile.aspiration}`
-        :"Scholarships for Indian Students"}
-        {/* Scholarships for Indian Students */}
+        Scholarships for Indian Students
       </h2>
 
      
