@@ -4,7 +4,10 @@ import Hero from "./components/hero";
 import AuthPanel from "./components/authPanel";
 import Dashboard from "./pages/dashboard";
 import Questions from "./pages/questions";
+import ChatPage from "./pages/chat";
+import DashboardLayout from "./layout/DashboardLayout";
 import { useState } from "react";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 /* Landing Page Component */
@@ -40,15 +43,17 @@ function LandingPage() {
 /* Main App Router */
 function App() {
   return (
- 
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/questions" element={<Questions />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-  
-    
+    <Routes>
+      {/* Landing page */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* Dashboard layout wrapper */}
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<Dashboard />} />
+      </Route>
+      
+      <Route path="/chat" element={<ChatPage />} />
+    </Routes>
   );
 }
-
 export default App;

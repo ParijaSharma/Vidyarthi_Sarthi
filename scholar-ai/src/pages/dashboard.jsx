@@ -1,12 +1,13 @@
 import React from 'react';
-import  Sidebar from '../components/Sidebar';
-import  Topbar from '../components/Topbar';
+// import  Sidebar from '../components/Sidebar';
+// import  Topbar from '../components/Topbar';
 import  StatCard from '../components/StatCard';
 import ScholarshipSection from '../components/ScholarshipSection';
 import { GraduationCap, FileText, Trophy, Clock } from "lucide-react";
 import Questions from "./questions";
 import { useState , useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+// import { Outlet } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
     //const [isPersonalized, setIsPersonalized] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
@@ -28,33 +29,30 @@ export default function Dashboard() {
     // };
 
     return (
-        <div className="flex min-h-screen bg-gray-100">
+        <>
            
             {/* side bar */}
-            <div className="flex min-h-screen bg-gray-100 border-r border-gray-200">
+            {/* <div className="flex min-h-screen bg-gray-100 border-r border-gray-200">
             <Sidebar/>    
-            </div>
+            </div> */}
 
             {/* searchbar and notifications */}
-            <div className='flex flex-col w-full'>
-              <Topbar/>
+            {/* <div className='flex flex-col w-full'>
+              <Topbar/> */}
 
-            <div className="mt-6 px-6">
                 {!userProfile ? (
                     <Questions  onComplete={(profile) => setUserProfile(profile)} />
                 ):(
                  <>
-                {/* welcome heading */}
-                
                     <h1 
-                    className="text-3xl font-bold text-gray-800">
+                    className="text-3xl px-4 py-4 font-bold text-gray-800">
                         {userProfile 
                         ?`Welcome back!`
                         : "Welcome back, Sarah!"}
                     
                     </h1>
                     
-                    <p className="text-gray-500 mt-1">
+                    <p className="text-gray-500 px-4 mt-1">
                         Showing scholarships for <b>{userProfile.stream}</b> students
                         aiming for <b>{userProfile.aspiration}</b>.
                     </p>
@@ -65,6 +63,7 @@ export default function Dashboard() {
                         title="Total Scholarships"
                         value="120"
                         icon={<GraduationCap size={22}/>}
+                        color="bg-blue-600 text-white"
                     />
 
                     <StatCard
@@ -94,8 +93,6 @@ export default function Dashboard() {
                 </div>
                  </>
                 )}
-            </div>
-        </div>
-        </div>
+                </>
     );
 }
