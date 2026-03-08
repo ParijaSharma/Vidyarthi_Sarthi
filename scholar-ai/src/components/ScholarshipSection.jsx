@@ -12,7 +12,7 @@ export default function ScholarshipSection({ userProfile }) {
         {/* Scholarships for Indian Students */}
       </h2>
 
-     
+
 
       {/* Category Buttons */}
       <div className="flex gap-4 mb-6">
