@@ -32,7 +32,7 @@ export default function AuthPanel({ isOpen, onClose }) {
 
               <button
                 onClick={onClose}
-                className="absolute top-5 right-5 text-white/70 hover:text-white"
+                className="absolute top-5 right-5 text-black/70 hover:text-black transition"
               >
                 <X size={24} />
               </button>
