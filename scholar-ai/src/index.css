@@ -10,3 +10,95 @@
     background-size: 55px 55px;
       
 }
+
+.glass-grid {
+  animation: gridMove 40s linear infinite;
+}
+
+@keyframes gridMove {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 60px 60px;
+  }
+}
+.carousel {
+  position: relative;
+  height: 70vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.slides {
+  display: flex;
+  width: 300%;
+  transition: transform 0.6s ease-in-out;
+}
+
+.slide {
+  width: 100%;
+  flex-shrink: 0;
+  text-align: center;
+  color: white;
+}
+
+.slide h1 {
+  font-size: 2.5rem;
+}
+
+.slide span {
+  color: #facc15;
+}
+
+.btn {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #facc15;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* arrows */
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.prev {
+  left: 20px;
+}
+.next {
+  right: 20px;
+}
+
+/* dots */
+.dots {
+  position: absolute;
+  bottom: 20px;
+}
+
+.dots span {
+  height: 10px;
+  width: 10px;
+  background: gray;
+  margin: 5px;
+  display: inline-block;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dots .active {
+  background: #facc15;
+}

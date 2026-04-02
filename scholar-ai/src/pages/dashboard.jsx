@@ -1,45 +1,52 @@
-import React from 'react';
-// import  Sidebar from '../components/Sidebar';
-// import  Topbar from '../components/Topbar';
+import React, { use } from 'react';
 import  StatCard from '../components/StatCard';
 import ScholarshipSection from '../components/ScholarshipSection';
 import { GraduationCap, FileText, Trophy, Clock } from "lucide-react";
 import Questions from "./questions";
 import { useState , useEffect} from "react";
-// import { Outlet } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
+
 export default function Dashboard() {
     //const [isPersonalized, setIsPersonalized] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
-    //const navigate = useNavigate();
-
+    const [recommendations, setRecommendations] = useState(null);
+    const [userInput, setUserInput] = useState("");
     useEffect(() => {
-    const savedProfile = localStorage.getItem("scholarship_answers");
-
-        if(!savedProfile){
-        //     navigate("/questions");
-        // } else {
+        const savedProfile = localStorage.getItem("user_profile");
+        const savedInput = localStorage.getItem("user_input");
+        if(savedProfile){
             setUserProfile(JSON.parse(savedProfile));
-        }
+        }    
+        if(savedInput){
+            setUserInput(savedInput);
+        }           
     }, []);
 
-    // const handlePersonalizationComplete = (ans) => {
-    //     setUserProfile(ans);
-    //     setIsPersonalized(true);
-    // };
+    // useEffect(() => {
+    //     const savedProfile = localStorage.getItem("user_profile");
+    //     if(savedProfile){
+    //         setUserProfile(JSON.parse(savedProfile));
+    //     }
+    // }, []);
+
+    useEffect(() => {
+        if(userProfile){
+            fetch("http://localhost:5000/recommend", {
+                method: "POST",
+                headers: {  "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_profile: userProfile,
+                    user_input : userInput
+                }),
+            })
+            .then(res => res.json())
+            .then(data => setRecommendations(data))
+            .catch(err => console.error("Error fetching recommendations:", err));
+            }
+        },[userProfile]);
 
     return (
         <>
-           
-            {/* side bar */}
-            {/* <div className="flex min-h-screen bg-gray-100 border-r border-gray-200">
-            <Sidebar/>    
-            </div> */}
-
-            {/* searchbar and notifications */}
-            {/* <div className='flex flex-col w-full'>
-              <Topbar/> */}
-
+     
                 {!userProfile ? (
                     <Questions  onComplete={(profile) => setUserProfile(profile)} />
                 ):(
@@ -89,7 +96,10 @@ export default function Dashboard() {
                 
                 </div>
                 <div className="mt-10 px-6">
-                        <ScholarshipSection userProfile={userProfile} />
+                        <ScholarshipSection 
+                        data={recommendations}
+                        userProfile={userProfile} 
+                        />
                 </div>
                  </>
                 )}
