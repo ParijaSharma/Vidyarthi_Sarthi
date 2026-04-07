@@ -50,7 +50,7 @@ export default function HeroCarousel({ onGetStarted }) {
           initial={{ opacity: 0, x: 80 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -80 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.3 }}
           className="relative z-10 text-center w-full px-4 flex flex-col items-center"
         >
           <h1 className="max-w-4xl mx-auto text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight drop-shadow-[0_0_30px_rgba(250,204,21,0.15)]">

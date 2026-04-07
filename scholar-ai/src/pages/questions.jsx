@@ -62,7 +62,7 @@ export default function Questions({onComplete}) {
             localStorage.setItem("user_input", userInput);
             // localStorage.setItem("scholarship_answers", JSON.stringify(updatedAnswers));
             // localStorage.setItem("user_profile", JSON.stringify(userProfile));
-            fetch("http://localhost:5000/recommend", {
+            fetch("http://localhost:5000/api/recommend",{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -4,6 +4,8 @@ import re
 import requests
 import json
 import time
+from datetime import datetime, timedelta
+
 
 url = "https://api.buddy4study.com/api/v1.0/ssms/scholarship/"
 
@@ -37,6 +39,14 @@ def get_high_reward(data,indices,top_n=5):
     )
     return sorted_list[:top_n]
 
+def extract_keywords(text):
+    words = text.lower().split()
+    return list(set([
+        w for w in words
+        if w not in ENGLISH_STOP_WORDS
+        and w.isalpha()
+        and len(w) > 2
+    ]))
 
 def extract_features(text):
     text = text.lower() if text else ""
@@ -135,6 +145,20 @@ for mode in modes:
             eligibility_text = clean_text(info.get("applicableFor", ""))
             text = f"{s.get("scholarshipName")} {eligibility_text} {info.get("purposeAward")}"
             levels , gender,location,field = extract_features(text)
+
+            deadline = s.get("deadlineDate")
+            today = datetime.now()
+            is_live = False
+            if deadline:
+                try:
+                    deadline_dt = datetime.strptime(deadline, "%Y-%m-%d")
+                    days_left = (deadline_dt - today).days
+
+                    is_upcoming = 0 <= days_left <= 15   
+                    is_live = days_left >= 0
+
+                except:
+                    pass
             
             combined_text = f"""
             {text}
@@ -148,6 +172,8 @@ for mode in modes:
                 "eligibility": clean_text(eligibility_text),
                 "deadline": s.get("deadlineDate"),
                 "status": mode,
+                "isUpcoming": is_upcoming,
+                "isLive": is_live,
                 "link": f"https://www.buddy4study.com/scholarship/{s['slug']}",
 
                 "level": levels,

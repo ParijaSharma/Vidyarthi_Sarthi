@@ -6,6 +6,7 @@ import Dashboard from "./pages/dashboard";
 import Questions from "./pages/questions";
 import ChatPage from "./pages/chat";
 import DashboardLayout from "./layout/DashboardLayout";
+import SavedScholarships from "./pages/SavedScholarships";
 import { useState } from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -49,10 +50,11 @@ function App() {
 
       {/* Dashboard layout wrapper */}
       <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<Dashboard />} />
-      </Route>
+      <Route index element={<Dashboard />} />
+      <Route path="saved" element={<SavedScholarships />} />
+      <Route path="chat" element={<ChatPage />} />
+    </Route>
       
-      <Route path="/chat" element={<ChatPage />} />
     </Routes>
   );
 }

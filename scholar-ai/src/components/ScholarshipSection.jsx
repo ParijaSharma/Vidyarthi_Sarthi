@@ -1,140 +1,230 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Bookmark,Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-export default function ScholarshipSection({ data, userProfile }) {
+export default function ScholarshipSection({ data, userProfile, filterType, setFilterType }) {
   if (!data) {
     return <p className="text-gray-500 p-4">Loading recommendations...</p>;
   }
-
+ // const [filterType, setFilterType] = useState("live"); // live, upcoming, always
+  const removeDuplicates = (arr) => {
+  const seen = new Set();
+  return arr.filter(item => {
+    if (seen.has(item.title)) return false;
+    seen.add(item.title);
+    return true;
+    });
+  };
+  
+  const best = removeDuplicates(data.best_matches);
+  const high = removeDuplicates(data.high_reward);
+  const safe = removeDuplicates(data.safe_options);
   return (
-    <div className="p-6">
+    <div className="px-4 md:px-8 py-6 h-full flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
+      <span className="flex gap-3 items-center mb-2">
+        <Sparkles size={30} className="text-yellow-500 mb-2" />
+        <h2 className="text-2xl font-bold mb-2">
+          {userProfile
+            ? `Scholarships for ${userProfile.field || userProfile.stream} students aiming for ${userProfile.aspiration}`
+            : "Scholarships for Indian Students"}
+        </h2>
+      </span>
 
-      {/* HEADER */}
-      <h2 className="text-2xl font-bold mb-2">
-        {userProfile
-          ? `Scholarships for ${userProfile.field || userProfile.stream} students aiming for ${userProfile.aspiration}`
-          : "Scholarships for Indian Students"}
-      </h2>
-
-      <p className="text-gray-500 mb-6">
+      <p className="text-gray-700 mb-6 md:w-max bg-gray-200/70 backdrop-blur-sm inline-block px-3 py-1 rounded-full text-sm">
         Curated based on your profile and preferences
       </p>
 
       {/* FILTER BAR */}
-      <div className="flex flex-wrap gap-3 mb-8">
-        <button className="bg-yellow-500 text-white px-5 py-2 rounded-full text-sm font-medium">
+      <div className="flex gap-3 mb-8">
+        <button
+          onClick={() => setFilterType("live")}
+          className={`px-5 py-2 rounded-full text-sm font-medium transition ${
+            filterType === "live"
+              ? "bg-yellow-500 text-white"
+              : "bg-white border text-gray-600"
+          }`}
+        >
           Live Scholarships
         </button>
-        <button className="border px-5 py-2 rounded-full text-gray-600 text-sm">
+
+        <button
+          onClick={() => setFilterType("upcoming")}
+          className={`px-5 py-2 rounded-full text-sm ${
+            filterType === "upcoming"
+              ? "bg-yellow-500 text-white"
+              : "bg-white border text-gray-600"
+          }`}
+        >
           Upcoming
         </button>
-        <button className="border px-5 py-2 rounded-full text-gray-600 text-sm">
+
+        <button
+          onClick={() => setFilterType("always")}
+          className={`px-5 py-2 rounded-full text-sm ${
+            filterType === "always"
+              ? "bg-yellow-500 text-white"
+              : "bg-white border text-gray-600"
+          }`}
+        >
           Always Open
         </button>
       </div>
 
-      {/* 🥇 TOP MATCHES */}
-      <Section
-        title="🎯 Top Matches for You"
-        subtitle="Best scholarships based on your profile"
-        data={data.best_matches}
-        type="best"
-      />
+      {/* SECTIONS */}
+      <div className="flex flex-col gap-8">
+        <Section
+          title="🎯 Top Matches for You"
+          subtitle="Best scholarships based on your profile"
+          data={best}
+          type="best"
+        />
 
-      {/* 💰 HIGH REWARD */}
-      <Section
-        title="💰 High Reward Scholarships"
-        subtitle="Maximum financial benefits"
-        data={data.high_reward}
-        type="high"
-      />
+        <Section
+          title="💰 High Reward Scholarships"
+          subtitle="Maximum financial benefits"
+          data={high}
+          type="high"
+        />
 
-      {/* 🛡️ SAFE OPTIONS */}
-      <Section
-        title="🛡️ Easy to Get (Safe Options)"
-        subtitle="Higher chances of selection"
-        data={data.safe_options}
-        type="safe"
-      />
+        <Section
+          title="🛡️ Easy to Get (Safe Options)"
+          subtitle="Higher chances of selection"
+          data={safe}
+          type="safe"
+        />
+      </div>
     </div>
   );
 }
-
-/* ================= SECTION ================= */
 
 function Section({ title, subtitle, data, type }) {
+  const scrollRef = useRef();
   if (!data || data.length === 0) return null;
 
+  const scroll = (direction) => {
+    const container = scrollRef.current;
+    const scrollAmount = container.firstChild?.offsetWidth + 24;
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <div className="mb-10">
-      <h3 className="text-xl font-semibold mb-1">{title}</h3>
+    <div className="flex flex-col relative group">
+      <h3 className="text-lg md:text-xl font-semibold tracking-tight mb-1">
+        {title}
+      </h3>
       <p className="text-gray-500 mb-4 text-sm">{subtitle}</p>
 
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.map((sch, i) => (
-          <ScholarshipCard key={i} scholarship={sch} type={type} />
-        ))}
+      <div className="relative w-full">
+        {/* LEFT ARROW */}
+        <button
+          onClick={() => scroll("left")}
+          className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur shadow-md p-2 rounded-full z-20 border hover:bg-gray-100 transition-opacity opacity-0 group-hover:opacity-100"
+        >
+          <ChevronLeft size={20} />
+        </button>
+
+        {/* RIGHT ARROW */}
+        <button
+          onClick={() => scroll("right")}
+          className="absolute -right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur shadow-md p-2 rounded-full z-20 border hover:bg-gray-100 transition-opacity opacity-0 group-hover:opacity-100"
+        >
+          <ChevronRight size={20} />
+        </button>
+
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-6 px-4"
+        >
+          {data.map((sch, i) => (
+            <ScholarshipCard key={i} scholarship={sch} type={type} />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-/* ================= CARD ================= */
-
 function ScholarshipCard({ scholarship, type }) {
-  const match = Math.min(95, Math.max(50, (scholarship.score * 100 * 2.2)));
+  const match = Math.round(scholarship.score);
 
+  const baseStyle =
+    "min-w-[300px] w-[300px] h-[400px] shrink-0 rounded-2xl shadow-sm hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-300 p-5 border hover:-translate-y-1 snap-start flex flex-col justify-between";
+
+  const typeStyles = {
+    best: "bg-gradient-to-br from-emerald-50 to-white border-emerald-100",
+    high: "bg-gradient-to-br from-yellow-50 to-white border-yellow-100",
+    safe: "bg-gradient-to-br from-blue-50 to-white border-blue-100",
+  };
+
+  const capitalizeFirst = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+  };
+
+    const handleSave = () => {
+    fetch("http://localhost:5000/api/bookmark/save", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(scholarship)
+    })
+    .then(res => res.json())
+    .then(() => setSaved(true));
+  };
+  
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition p-5 border">
-
-      {/* TOP BADGES */}
-      <div className="flex justify-between items-center mb-3">
-
-        <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
-          {match.toFixed(0)}% Match
-        </span>
-
-        {type === "high" && (
-          <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">
-            High Reward
+    <div className={`${baseStyle} ${typeStyles[type]}`}>
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full font-medium">
+            {match.toFixed(0)}% Match
           </span>
-        )}
 
-        {type === "safe" && (
-          <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
-            Easy
-          </span>
-        )}
+          {type === "high" && (
+            <span className="bg-yellow-50 text-yellow-600 text-xs px-2 py-1 rounded-full">
+              High Reward
+            </span>
+          )}
+
+          {type === "safe" && (
+            <span className="bg-blue-50 text-blue-600 text-xs px-2 py-1 rounded-full">
+              Easy
+            </span>
+          )}
+        </div>
+
+        <h3 className="font-semibold text-lg mb-2 line-clamp-2 leading-tight">
+          {capitalizeFirst(scholarship.title)}
+        </h3>
+
+        <div className="space-y-2 mb-4">
+          <p className="text-sm text-gray-600 flex items-start gap-2">
+            <span>🏆</span> {scholarship.award}
+          </p>
+          <p className="text-sm text-gray-500 line-clamp-2 flex items-start gap-2">
+            <span>🎓</span> {scholarship.eligibility}
+          </p>
+          <p className="text-xs text-indigo-600 bg-indigo-50/70 border border-indigo-100 p-2 rounded-lg line-clamp-2">
+            💡 {scholarship.reason}
+          </p>
+        </div>
       </div>
 
-      {/* TITLE */}
-      <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-        {scholarship.title}
-      </h3>
-
-      {/* AWARD */}
-      <p className="text-sm text-gray-600 mb-1">
-        🏆 {scholarship.award}
-      </p>
-
-      {/* ELIGIBILITY */}
-      <p className="text-sm text-gray-500 mb-2 line-clamp-2">
-        🎓 {scholarship.eligibility}
-      </p>
-
-      {/* REASON */}
-      <p className="text-xs text-indigo-600 mb-3 line-clamp-2">
-        💡 {scholarship.reason}
-      </p>
-
-      {/* CTA */}
+      <span className="flex flex-col gap-2 ">
       <a
         href={scholarship.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-1 text-indigo-600 text-sm font-medium hover:underline"
+        className="flex items-center gap-1 text-indigo-600 text-sm font-semibold hover:underline transition-colors hover:text-indigo-700 mt-2"
       >
-        Apply <ExternalLink size={14} />
+        Apply Now <ExternalLink size={14} />
       </a>
+      <button onClick={() => handleSave(scholarship)}
+      >
+      <span className=" flex items-center gap-1 text-yellow-500 hover:text-yellow-600 text-lg"><Bookmark size={20} />save </span>
+    </button>
+    </span>    
     </div>
   );
 }
