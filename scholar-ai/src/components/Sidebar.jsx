@@ -1,98 +1,86 @@
+import { LayoutDashboard, Settings, GraduationCap, Sparkles, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";
-import {
-  LayoutDashboard,
-  User,
-  FileText,
-  Bell,
-  Settings,
-  GraduationCap,
-  Sparkles,
-} from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-export default function Sidebar() {
-  return (
-    <aside className="w-64 h-screen bg-white border-r border-gray-200 px-4 py-4 fixed left-0 top-0 shadow-sm">
+export default function Sidebar({ isOpen, toggleSidebar, isDark }) {
+    const location = useLocation();
+    
+    // Check user type from local storage
+    const hasScholarship = localStorage.getItem("scholarship_answers");
+    const hasInternship = localStorage.getItem("internship_answers");
+    const isInternshipUser = hasInternship && !hasScholarship;
 
-      {/* LOGO */}
-      <div className="flex items-center gap-3 mb-6 border-b pb-5">
-        <div className="w-10 h-10 rounded-xl 
-                        bg-gradient-to-br from-yellow-300 to-yellow-500
-                        flex items-center justify-center shadow-md">
-          <GraduationCap className="text-white" size={20} />
-        </div>
+    // Dynamic theme classes bro
+    const bgClass = isDark ? "bg-[#0b1220]/50 backdrop-blur-xl border-white/10" : "bg-white border-gray-200";
+    const textMainClass = isDark ? "text-white" : "text-gray-900";
+    const textSubClass = isDark ? "text-white/50" : "text-gray-500";
+    const borderClass = isDark ? "border-white/10" : "border-gray-200";
 
-        <div>
-          <h1 className="text-lg font-bold">Vidyarthi Sarthi</h1>
-          <p className="text-xs text-gray-400">Student Portal</p>
-        </div>
-      </div>
+    return (
+        <aside className={`${isOpen ? 'w-64' : 'w-20'} h-screen ${bgClass} border-r flex flex-col transition-all duration-300 shrink-0 shadow-lg z-20 relative`}>
+            
+            <div className={`flex items-center h-20 gap-3 px-5 border-b ${borderClass} shrink-0 justify-between`}>
+                <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="min-w-[40px] h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-md shrink-0">
+                        <GraduationCap className="text-white" size={20}/>
+                    </div>
+                    {isOpen && (
+                        <div className="overflow-hidden whitespace-nowrap">
+                            <h1 className={`text-lg font-bold ${textMainClass} leading-tight`}>Vidyarthi Sarthi</h1>
+                            <p className={`text-xs ${textSubClass}`}>Student Portal</p>
+                        </div>
+                    )}
+                </div>
+                
+                {/* Close Button inside the sidebar */}
+                {isOpen && toggleSidebar && (
+                   <button onClick={toggleSidebar} className={`p-1.5 rounded-lg ${isDark ? 'hover:bg-white/10 text-white/70' : 'hover:bg-gray-100 text-gray-500'} transition-colors shrink-0`}>
+                       <ChevronLeft size={20} />
+                   </button>
+                )}
+            </div>
 
-      {/* NAVIGATION */}
-      <nav className="space-y-2.5">
+            <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-2 no-scrollbar">
+                {isInternshipUser ? (
+                    <SidebarItem icon={<Briefcase size={20}/>} label="Internships" path="/internship-dashboard" isOpen={isOpen} isActive={location.pathname === '/internship-dashboard'} isDark={isDark} />
+                ) : (
+                    <SidebarItem icon={<LayoutDashboard size={20}/>} label="Scholarships" path="/dashboard" isOpen={isOpen} isActive={location.pathname === '/dashboard'} isDark={isDark} />
+                )}
+                
+                <SidebarItem icon={<Sparkles size={20}/>} label="AI chat" path="/chat" isOpen={isOpen} isActive={location.pathname === '/chat'} isDark={isDark} />    
+                <SidebarItem icon={<Settings size={20}/>} label="Settings" path="#" isOpen={isOpen} isDark={isDark} />
+            </nav>
 
-        <SidebarItem
-          icon={<LayoutDashboard size={18} />}
-          label="Overview"
-          path="/dashboard"
-        />
-
-        <SidebarItem
-          icon={<User size={18} />}
-          label="Profile"
-          path="/dashboard/profile"
-        />
-
-        <SidebarItem
-          icon={<Sparkles size={18} />}
-          label="AI chat"
-          path="/dashboard/chat"
-        />
-
-        <SidebarItem
-          icon={<FileText size={18} />}
-          label="Applications"
-          path="/dashboard/applications"
-        />
-
-        <SidebarItem
-          icon={<Bell size={18} />}
-          label="Notifications"
-          path="/dashboard/notifications"
-        />
-
-        <SidebarItem
-          icon={<Settings size={18} />}
-          label="Settings"
-          path="/dashboard/settings"
-        />
-
-        <SidebarItem
-          icon={<GraduationCap size={18} />}
-          label="Scholarships"
-          path="/dashboard/saved"
-        />
-
-      </nav>
-    </aside>
-  );
+            {/* Open button at bottom when closed */}
+            {!isOpen && toggleSidebar && (
+                <div className={`p-4 border-t ${borderClass} flex justify-center`}>
+                    <button onClick={toggleSidebar} className={`p-2 rounded-xl ${isDark ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'} transition-colors`}>
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
+            )}
+            
+        </aside>
+    );
 }
 
-function SidebarItem({ icon, label, path }) {
-  return (
-    <NavLink
-      to={path}
-      className={({ isActive }) =>
-        `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300
-        ${
-          isActive
-            ? "bg-yellow-400 text-black shadow-md"
-            : "text-gray-600 hover:bg-yellow-100 hover:text-black"
-        }`
-      }
-    >
-      {icon}
-      <span className="font-medium">{label}</span>
-    </NavLink>
-  );
+function SidebarItem({icon, label, path, isOpen, isActive, isDark}) {
+    let activeClass = "";
+    let inactiveClass = "";
+
+    // Adapting the hover and active states for both light and dark modes
+    if (isDark) {
+        activeClass = "bg-white/15 text-yellow-400 font-medium shadow-[0_0_10px_rgba(250,204,21,0.1)]";
+        inactiveClass = "text-white/50 hover:bg-white/5 hover:text-white/90";
+    } else {
+        activeClass = "bg-yellow-50 text-yellow-600 font-medium";
+        inactiveClass = "text-gray-500 hover:bg-gray-50 hover:text-gray-900";
+    }
+
+    return (
+        <Link to={path} className={`flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-200 ${!isOpen && 'justify-center'} ${isActive ? activeClass : inactiveClass}`} title={!isOpen ? label : ''}>
+            {icon}
+            {isOpen && <span className="whitespace-nowrap">{label}</span>}
+        </Link>
+    );
 }

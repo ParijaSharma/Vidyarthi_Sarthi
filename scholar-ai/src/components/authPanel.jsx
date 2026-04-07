@@ -1,139 +1,203 @@
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { GraduationCap } from "lucide-react";
-import Hero from "./hero";
 
 export default function AuthPanel({ isOpen, onClose }) {
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+  const [isLoadingPin, setIsLoadingPin] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    pincode: "",
+    city: "",
+    state: "",
+    education: "school",
+  });
 
-  // 🔥 LOGIN FUNCTION
-  const handleLogin = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+  const handleAuthAction = () => {
+    onClose();
+    navigate('/questions');
+  };
 
-      const data = await res.json();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-      if (res.ok) {
-        // ✅ store token
-        localStorage.setItem("token", data.token);
+  const handlePincodeChange = async (e) => {
+    const pin = e.target.value;
+    setFormData((prev) => ({ ...prev, pincode: pin }));
 
-        // close panel
-        onClose();
-
-        // optional redirect
-        window.location.href = "/dashboard";
-      } else {
-        alert(data.message || "Login failed");
+    if (pin.length === 6) {
+      setIsLoadingPin(true);
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+        const data = await response.json();
+        
+        if (data && data[0].Status === "Success") {
+          const postOffice = data[0].PostOffice[0];
+          setFormData((prev) => ({
+            ...prev,
+            city: postOffice.District,
+            state: postOffice.State,
+          }));
+        } else {
+          setFormData((prev) => ({ ...prev, city: "", state: "" }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch location data", error);
+      } finally {
+        setIsLoadingPin(false);
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+    } else {
+      if (formData.city || formData.state) {
+        setFormData((prev) => ({ ...prev, city: "", state: "" }));
+      }
     }
   };
 
   return (
     <div
-      className={`fixed inset-0 z-50 transition duration-300 
+      className={`fixed inset-0 z-50 transition-all duration-300 
       ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
     >
-      <div className="grid md:grid-cols-[450px_1fr] h-full">
+      <div className="grid md:grid-cols-2 h-full w-full">
+        <div className="relative flex items-center justify-center w-full h-full
+        bg-gradient-to-br from-[#0c1f1b]/90 via-[#0d2f28]/90 to-[#071514]/90 backdrop-blur-xl">
+          <div className="absolute w-[520px] h-[520px] 
+          bg-emerald-500/20 blur-[120px] rounded-full pointer-events-none"></div>
+          <div className="relative flex flex-col justify-center items-center w-full h-full px-4 py-8">
+            <div
+              className="
+                w-full max-w-md p-8 md:p-10 rounded-3xl
+                bg-white/10 backdrop-blur-2xl
+                border border-white/20
+                shadow-[0_20px_80px_rgba(0,0,0,0.45)]
+                relative max-h-[90vh] overflow-y-auto no-scrollbar">
+                
+              <style>{`
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+              `}</style>
 
-        {/* LEFT SIDE */}
-        <div className="relative flex items-center justify-center bg-white">
-          <div className="relative flex flex-col justify-between items-center h-full">
-
-            <div className="flex flex-col items-center justify-center w-[420px] h-full p-10 relative">
-
-              {/* CLOSE */}
               <button
                 onClick={onClose}
-                className="absolute top-5 right-5 text-black/70 hover:text-black transition"
+                className="absolute top-5 right-5 text-white/70 hover:text-white transition-colors"
               >
                 <X size={24} />
               </button>
 
-              {/* LOGO */}
-              <div className="flex flex-col items-center gap-3 mb-4 border-b w-full pb-5">
-                <div className="w-[100px] h-[100px] rounded-xl 
-                                bg-gradient-to-br from-yellow-300 to-yellow-500
-                                flex items-center justify-center shadow-md">
-                  <GraduationCap className="text-white" size={60}/>
+              <h2 className="text-3xl font-bold text-white mb-8">
+                {isLogin ? "Welcome 👋" : "Create Account 🎓"}
+              </h2>
+
+              {isLogin ? (
+                <>
+                  <input
+                    placeholder="Email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full mb-4 p-3 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white placeholder-white/60 outline-none focus:border-[#f5b301] transition-colors"
+                  />
+                  <input
+                    placeholder="Password"
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full mb-6 p-3 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white placeholder-white/60 outline-none focus:border-[#f5b301] transition-colors"
+                  />
+                  <button
+                    onClick={handleAuthAction}
+                    className="w-full py-3 rounded-2xl font-semibold bg-[#f5b301] text-black shadow-lg hover:brightness-105 transition-all">
+                    Login / Sign in with Gmail
+                  </button>
+                  <p className="text-white/80 mt-7 text-sm text-center">
+                    Don’t have an account?{" "}
+                    <button onClick={() => setIsLogin(false)} className="font-semibold hover:text-white transition-colors">Register</button>
+                  </p>
+                </>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <input
+                    placeholder="Full Name"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className="w-full p-3 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white placeholder-white/60 outline-none focus:border-[#f5b301] transition-colors"
+                  />
+                  <input
+                    placeholder="Email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full p-3 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white placeholder-white/60 outline-none focus:border-[#f5b301] transition-colors"
+                  />
+                  <input
+                    placeholder="Password"
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full p-3 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white placeholder-white/60 outline-none focus:border-[#f5b301] transition-colors"
+                  />
+                  <div className="relative">
+                    <input
+                      placeholder="Pincode (6 digits)"
+                      name="pincode"
+                      maxLength={6}
+                      value={formData.pincode}
+                      onChange={handlePincodeChange}
+                      className="w-full p-3 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white placeholder-white/60 outline-none focus:border-[#f5b301] transition-colors"
+                    />
+                    {isLoadingPin && <Loader2 className="absolute right-3 top-3 animate-spin text-white/60" size={20} />}
+                  </div>
+                  <div className="flex gap-3">
+                    <input
+                      placeholder="City"
+                      readOnly
+                      value={formData.city}
+                      className="w-1/2 p-3 rounded-2xl bg-white/5 backdrop-blur border border-white/10 text-white/80 placeholder-white/40 outline-none cursor-not-allowed"
+                    />
+                    <input
+                      placeholder="State"
+                      readOnly
+                      value={formData.state}
+                      className="w-1/2 p-3 rounded-2xl bg-white/5 backdrop-blur border border-white/10 text-white/80 placeholder-white/40 outline-none cursor-not-allowed"
+                    />
+                  </div>
+                  <div className="relative">
+                    <select
+                      name="education"
+                      value={formData.education}
+                      onChange={handleChange}
+                      className="w-full p-3 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white outline-none focus:border-[#f5b301] transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="school" className="text-black">High School Student</option>
+                      <option value="college" className="text-black">College / University Student</option>
+                      <option value="internship" className="text-black">Looking for Internships</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-white/60">▼</div>
+                  </div>
+                  <button
+                    onClick={handleAuthAction}
+                    className="w-full py-3 mt-2 rounded-2xl font-semibold bg-[#f5b301] text-black shadow-lg hover:brightness-105 transition-all">
+                    Create Account / Sign in with Gmail
+                  </button>
+                  <p className="text-white/80 mt-4 text-sm text-center">
+                    Already have an account?{" "}
+                    <button onClick={() => setIsLogin(true)} className="font-semibold hover:text-white transition-colors">Sign in</button>
+                  </p>
                 </div>
-
-                <h2 className="text-3xl font-bold text-green-900">
-                  Vidyarthi Sarthi
-                </h2>
-              </div>
-
-              {/* EMAIL */}
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full mb-4 p-3 rounded-xl
-                border border-gray-500
-                outline-none focus:border-[#f5b301]"
-              />
-
-              {/* PASSWORD */}
-              <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                type="password"
-                className="w-full mb-4 p-3 rounded-xl 
-                border border-gray-500 text-black
-                outline-none focus:border-[#f5b301]"
-              />
-
-              {/* LOGIN BUTTON */}
-              <button
-                onClick={handleLogin}
-                className="w-full py-3 rounded-2xl font-semibold
-                bg-yellow-400 text-slate-900
-                hover:bg-yellow-500 transition shadow-lg"
-              >
-                Login
-              </button>
-
-              {/* DIVIDER */}
-              <div className="flex items-center my-6 w-full">
-                <div className="flex-grow border-t border-gray-300"></div>
-                <span className="mx-4 text-gray-500 text-sm">or</span>
-                <div className="flex-grow border-t border-gray-300"></div>
-              </div>
-
-              {/* GOOGLE */}
-              <button
-                className="w-full flex items-center justify-center gap-3
-                border border-gray-300
-                py-3 rounded-xl
-                hover:bg-gray-50 transition font-medium"
-              >
-                <FcGoogle size={20} />
-                <span className="text-black">Continue with Google</span>
-              </button>
-
+              )}
             </div>
           </div>
         </div>
-
-        {/* RIGHT SIDE */}
-        <div className="hidden md:flex items-center justify-center
-          bg-[#071c18] text-white relative glass-grid">
-
-          <Hero onGetStarted={onClose} />
-
-        </div>
+        <div className="hidden md:block"></div>
       </div>
     </div>
   );

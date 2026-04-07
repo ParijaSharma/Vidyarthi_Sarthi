@@ -1,28 +1,37 @@
+import React, { useState } from 'react';
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
 export default function DashboardLayout() {
-  return (
-    <div className="flex h-screen overflow-hidden bg-gray-100">
+    // We bring in your state management so the hamburger menu actually works
+    const [isSidebarOpen, setSidebarOpen] = useState(true);
 
-      {/* Sidebar */}
-      <Sidebar />
+    return (
+        <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
+            
+            {/* Your dynamic sidebar now gets the correct props! */}
+            <Sidebar 
+                isOpen={isSidebarOpen} 
+                toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} 
+            />
 
-      {/* Main Section */}
-      <div className="ml-64 flex flex-col flex-1">
+            {/* Main Content Area (No more hardcoded ml-64!) */}
+            <div className="flex flex-col flex-1 min-w-0">
+                
+                {/* Topbar gets the toggle function so the menu button works */}
+                <Topbar 
+                    toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} 
+                />
 
-        {/* Fixed Navbar */}
-        <div className="h-16 flex-shrink-0 bg-white border-b z-10">
-          <Topbar />
+                {/* Scroll ONLY the main content area */}
+                <main className="flex-1 overflow-y-auto">
+                    {/* This Outlet is where dashboard.jsx and chat.jsx render */}
+                    <Outlet />
+                </main>
+                
+            </div>
+            
         </div>
-
-        {/* Scroll ONLY this */}
-        <div className="flex-1 overflow-y-auto p-1">
-          <Outlet />
-        </div>
-
-      </div>
-    </div>
-  );
+    );
 }

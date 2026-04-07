@@ -2,19 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-
-.glass-grid{
-   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.1) 1.2px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.1) 1.2px,transparent 1px);
-    background-size: 55px 55px;
-      
-}
-
+/* Your refined glass-grid styling + Parija's animation merged */
 .glass-grid {
-  animation: gridMove 40s linear infinite;
+   background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+   background-size: 55px 55px;
+   animation: gridMove 40s linear infinite;
 }
 
+/* Parija's grid animation (UNTOUCHED) */
 @keyframes gridMove {
   from {
     background-position: 0 0;
@@ -23,6 +20,11 @@
     background-position: 60px 60px;
   }
 }
+
+/* ---------------------------------------------------- */
+/* PARIJA'S CAROUSEL & UTILITY STYLES (DO NOT TOUCH)    */
+/* ---------------------------------------------------- */
+
 .carousel {
   position: relative;
   height: 70vh;
@@ -30,7 +32,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
 }
 
 .slides {
@@ -102,6 +103,8 @@
 .dots .active {
   background: #facc15;
 }
+
+/* Scrollbar hiding utilities */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

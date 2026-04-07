@@ -26,3 +26,12 @@ dist-ssr
 node_modules/
 dist/
 .env
+
+# Python/Backend stuff
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+.venv/

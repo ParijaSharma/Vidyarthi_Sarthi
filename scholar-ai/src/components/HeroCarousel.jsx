@@ -3,21 +3,21 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const slidesData = [
   {
-    title: "Find a Scholarship That Sounds Like",
+    title: "Find Scholarships & Internships That Sound Like",
     highlight: " You",
-    desc: "Scholar AI helps you find scholarships that match your unique profile.",
+    desc: "Scholar AI helps you find the perfect opportunities that match your unique profile.",
     button: "Get Started →",
   },
   {
     title: "AI Powered Matching",
     highlight: " 🎯",
-    desc: "Smart recommendations based on your skills and goals.",
+    desc: "Smart recommendations based on your academic stream and career goals.",
     button: "Explore →",
   },
   {
     title: "Track & Apply Easily",
     highlight: " 🚀",
-    desc: "Manage all your scholarships in one dashboard.",
+    desc: "Manage all your applications in one unified dashboard.",
     button: "Dashboard →",
   },
 ];
