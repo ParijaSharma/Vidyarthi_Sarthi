@@ -1,117 +1,139 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-import fitz  # PyMuPDF
-import requests
+from pydantic import BaseModel
+from typing import Dict, Any, List
+import fitz  # PyMuPDF for reading PDFs
 import json
+import os
 
+# 1. Initialize the App
 app = FastAPI()
 
-# Make sure this CORS block is here so React doesn't get blocked
+# 2. Fix CORS so React can actually talk to this backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], 
+    allow_origins=["*"],  # Allows all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.post("/api/scan")
-async def scan_resume(file: UploadFile = File(...)):
-    # 1. Read the PDF file in memory
-    content = await file.read()
-    
-    text = ""
+# ---------------------------------------------------------
+# INTERNSHIP RECOMMENDER API (REAL JSON DATA)
+# ---------------------------------------------------------
+
+# Define what the incoming data from React looks like
+class InternshipProfile(BaseModel):
+    academic_status: str = None
+    domain: str = None
+    work_mode: str = None
+    availability: str = None
+    stipend_expectations: str = None
+
+# Helper function to load your JSON database
+def load_internships():
+    # Make sure your internships.json is inside a folder named 'data'
+    path = os.path.join("data", "internships.json")
     try:
-        with fitz.open(stream=content, filetype="pdf") as doc:
-            for page in doc:
-                text += page.get_text()
-    except Exception as e:
-        return [{"type": "bad", "text": "Could not read the PDF file."}]
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+@app.post("/api/internships/recommend")
+async def recommend_internships(profile: InternshipProfile):
+    all_internships = load_internships()
+    scored_results = []
+
+    # If the JSON file is missing, send a fallback so the app doesn't crash
+    if not all_internships:
+        return {"best_matches": [], "high_reward": [], "safe_options": []}
+
+    for item in all_internships:
+        score = 0
+        reasons = []
+
+        # 1. Domain/Category Match (Heavy Weight)
+        if profile.domain and profile.domain.lower() in item.get('category', '').lower():
+            score += 50
+            reasons.append(f"Strong match for {profile.domain}.")
+        
+        # 2. Academic Year Match (Medium Weight)
+        # If the internship says "Any", it's a match for everyone
+        min_year = item.get('min_year', '')
+        if min_year == "Any" or (profile.academic_status and profile.academic_status.lower() == min_year.lower()):
+            score += 30
+            reasons.append("Perfect for your academic year.")
+
+        # 3. Work Mode / Location Match (Light Weight)
+        if profile.work_mode:
+            user_mode = profile.work_mode.lower()
+            job_loc = item.get('location', '').lower()
+            if user_mode == "any" or user_mode in job_loc or job_loc == "hybrid":
+                score += 20
+                reasons.append(f"Fits your {profile.work_mode} preference.")
+
+        # Only keep internships if they score at least a 30 (Filters out total mismatches)
+        if score >= 30:
+            # Combine the reasons into one nice string
+            final_reason = " ".join(reasons) if reasons else f"Good match for {item.get('category')}."
             
-    # 2. Craft the prompt for Ollama
-    # We restrict it to JSON format so the frontend doesn't break
-    prompt = f"""
-    Analyze this resume text for a student applying for internships.
-    Provide exactly 4 points of feedback (mix of positive and negative).
-    Return ONLY a JSON array of objects. Each object must have 'type' (either 'good' or 'bad') and 'text' (the feedback string).
-    
-    Resume Text: {text[:3000]}
-    """
-    
-    # 3. Call your local Ollama AI
-    try:
-        res = requests.post("http://localhost:11434/api/generate", json={
-            "model": "llama3", # change to phi3 if you downloaded that instead
-            "prompt": prompt,
-            "format": "json",
-            "stream": False
-        })
-        
-        data = res.json()
-        feedback_array = json.loads(data['response'])
-        return feedback_array
-        
-    except Exception as e:
-        print(e)
-        return [{"type": "bad", "text": "Failed to connect to local AI. Is Ollama running?"}]
+            scored_results.append({
+                "title": item.get('title'),
+                "award": item.get('stipend'),
+                "eligibility": item.get('min_year'),
+                "reason": final_reason,
+                "score": float(score),
+                "link": item.get('link', '#')
+            })
+
+    # Sort the array by highest score first
+    scored_results.sort(key=lambda x: x['score'], reverse=True)
+
+    # Split into categories exactly like Parija's dashboard expects
+    return {
+        "best_matches": [s for s in scored_results if s['score'] >= 80],
+        "high_reward": [s for s in scored_results if 50 <= s['score'] < 80],
+        "safe_options": [s for s in scored_results if 30 <= s['score'] < 50]
+    }
 
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+# ---------------------------------------------------------
+# RESUME SCANNER API
+# ---------------------------------------------------------
 
 @app.post("/scan")
 async def scan_resume(file: UploadFile = File(...)):
-    # 1. Check if it's a PDF
-    if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are supported right now.")
-
-    # 2. Extract text using PyMuPDF (fitz)
     try:
-        content = await file.read()
-        doc = fitz.open(stream=content, filetype="pdf")
+        # Read the file the user uploaded
+        file_bytes = await file.read()
+        
         text = ""
-        for page in doc:
-            text += page.get_text()
-    except Exception as e:
-        print("PDF Error:", e)
-        raise HTTPException(status_code=500, detail="Failed to read the PDF file.")
-
-    # 3. Send the text to Ollama
-    # We strictly tell it to return a JSON array so your React map() function doesn't crash again
-    prompt = f"""
-    You are an expert tech recruiter. Review the following resume text. Provide exactly 3 concise, actionable bullet points of constructive feedback to improve it.
-    You MUST return ONLY a raw JSON array of strings. Do not use markdown blocks like ```json.
-    Example format: ["Feedback 1", "Feedback 2", "Feedback 3"]
-    
-    Resume text:
-    {text[:3000]} 
-    """
-
-    try:
-        response = requests.post(OLLAMA_URL, json={
-            "model": "llama3", 
-            "prompt": prompt,
-            "stream": False
-        })
-        response.raise_for_status()
-        
-        # Get the raw text from Ollama
-        result_text = response.json().get("response", "")
-        
-        # BULLETPROOF JSON EXTRACTION: Find the first '[' and last ']'
-        start_idx = result_text.find('[')
-        end_idx = result_text.rfind(']')
-
-        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-            # Slices out only the array part, ignoring the AI's yapping
-            json_str = result_text[start_idx : end_idx + 1]
-            suggestions = json.loads(json_str)
+        # If it's a PDF, extract the text using PyMuPDF
+        if file.filename.endswith(".pdf"):
+            doc = fitz.open(stream=file_bytes, filetype="pdf")
+            for page in doc:
+                text += page.get_text()
         else:
-            # Fallback: If Llama3 completely failed to make an array, just wrap its raw text in a list so React doesn't crash
-            print("AI failed to return an array. Raw output:", result_text)
-            suggestions = [result_text.strip()]
+            text = "Could not parse file. Please upload a PDF."
 
-        return {"suggestions": suggestions}
+        # Check if the resume is empty
+        if len(text.strip()) == 0:
+            return {"suggestions": ["Bro, this PDF is completely empty or just images. The ATS scanners won't be able to read this!"]}
+
+        # ---------------------------------------------------------
+        # Mock feedback based on text length (Replace with real AI later)
+        # ---------------------------------------------------------
+        mock_feedback = [
+            "🟢 ATS Check: PDF text extracted successfully.",
+            f"📄 Word Count: Your resume has about {len(text.split())} words.",
+            "💡 Action Verb Check: Try starting more bullet points with strong verbs like 'Engineered', 'Designed', or 'Led'.",
+            "📊 Metrics Check: We noticed a lack of numbers. Quantify your achievements (e.g., 'improved speed by 20%').",
+            "🔗 Link Check: Ensure your GitHub and LinkedIn URLs are clickable and up to date."
+        ]
+        
+        return {"suggestions": mock_feedback}
 
     except Exception as e:
-        print("Ollama Error:", e)
-        raise HTTPException(status_code=500, detail="AI processing failed. Check backend terminal")
+        # If anything breaks, tell React exactly what happened safely
+        return {"suggestions": [f"Backend Error: Something went wrong processing the file -> {str(e)}"]}

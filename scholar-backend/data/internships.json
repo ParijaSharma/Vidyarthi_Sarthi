@@ -1,0 +1,152 @@
+[
+  {
+    "title": "Software Engineering Intern",
+    "company": "Google",
+    "location": "Hybrid",
+    "category": "Software Development",
+    "stipend": "₹60,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://careers.google.com/students/",
+    "description": "Work on core Google products, write C++/Python, and learn scalable distributed systems."
+  },
+  {
+    "title": "Cybersecurity Analyst Intern",
+    "company": "CrowdStrike",
+    "location": "Remote",
+    "category": "Cybersecurity",
+    "stipend": "₹45,000/month",
+    "min_year": "Final Year",
+    "link": "https://crowdstrike.wd5.myworkdayjobs.com/",
+    "description": "Assist in threat hunting, analyzing malware, and monitoring network traffic."
+  },
+  {
+    "title": "AI/ML Research Intern",
+    "company": "Microsoft",
+    "location": "In-Office",
+    "category": "Data Science & AI",
+    "stipend": "₹75,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://careers.microsoft.com/students/",
+    "description": "Train Large Language Models and work on computer vision projects with Microsoft Research."
+  },
+  {
+    "title": "Frontend Developer Intern",
+    "company": "Zomato",
+    "location": "In-Office",
+    "category": "Software Development",
+    "stipend": "₹30,000/month",
+    "min_year": "1st/2nd Year",
+    "link": "https://zomato.com/careers",
+    "description": "Build responsive React components and optimize web performance for millions of users."
+  },
+  {
+    "title": "Information Security Intern",
+    "company": "Palo Alto Networks",
+    "location": "Hybrid",
+    "category": "Cybersecurity",
+    "stipend": "₹50,000/month",
+    "min_year": "Recent Graduate",
+    "link": "https://jobs.paloaltonetworks.com/",
+    "description": "Penetration testing, vulnerability scanning, and automating security protocols."
+  },
+  {
+    "title": "Product Design (UI/UX) Intern",
+    "company": "Swiggy",
+    "location": "Remote",
+    "category": "UI/UX Design",
+    "stipend": "₹25,000/month",
+    "min_year": "Any",
+    "link": "https://careers.swiggy.com/",
+    "description": "Create wireframes, user flows, and high-fidelity Figma prototypes for the Swiggy app."
+  },
+  {
+    "title": "Data Analyst Intern",
+    "company": "Fractal Analytics",
+    "location": "Hybrid",
+    "category": "Data Science & AI",
+    "stipend": "₹35,000/month",
+    "min_year": "Final Year",
+    "link": "https://fractal.ai/careers/",
+    "description": "Clean datasets using Python/Pandas, build SQL pipelines, and create Tableau dashboards."
+  },
+  {
+    "title": "Associate Product Manager Intern",
+    "company": "Flipkart",
+    "location": "In-Office",
+    "category": "Product Management",
+    "stipend": "₹65,000/month",
+    "min_year": "Final Year",
+    "link": "https://flipkartcareers.com/",
+    "description": "Define product roadmaps, conduct A/B testing, and work closely with engineering teams."
+  },
+  {
+    "title": "Quantitative Finance Intern",
+    "company": "Jane Street",
+    "location": "In-Office",
+    "category": "Finance",
+    "stipend": "₹1,50,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://www.janestreet.com/join-us/",
+    "description": "Develop algorithmic trading models using advanced mathematics and Python."
+  },
+  {
+    "title": "Digital Marketing Intern",
+    "company": "Paytm",
+    "location": "Remote",
+    "category": "Marketing & Sales",
+    "stipend": "₹15,000/month",
+    "min_year": "1st/2nd Year",
+    "link": "https://paytm.com/careers",
+    "description": "Manage SEO campaigns, analyze Google Analytics data, and run social media ads."
+  },
+  {
+    "title": "Backend Engineering Trainee",
+    "company": "Atlassian",
+    "location": "Remote",
+    "category": "Software Development",
+    "stipend": "₹80,000/month",
+    "min_year": "Recent Graduate",
+    "link": "https://www.atlassian.com/company/careers",
+    "description": "Scale microservices using Node.js and Go, and manage AWS infrastructure."
+  },
+  {
+    "title": "Network Security Intern",
+    "company": "Cisco",
+    "location": "Hybrid",
+    "category": "Cybersecurity",
+    "stipend": "₹40,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://jobs.cisco.com/",
+    "description": "Hands-on experience with firewalls, intrusion detection systems, and Cisco Packet Tracer environments."
+  },
+  {
+    "title": "B2B Sales Intern",
+    "company": "Razorpay",
+    "location": "In-Office",
+    "category": "Marketing & Sales",
+    "stipend": "₹20,000/month + Commission",
+    "min_year": "Final Year",
+    "link": "https://razorpay.com/jobs/",
+    "description": "Pitch payment gateway solutions to startups and manage client onboarding pipelines."
+  },
+  {
+    "title": "Web Development Intern (Unpaid)",
+    "company": "TechForGood NGO",
+    "location": "Remote",
+    "category": "Software Development",
+    "stipend": "Unpaid",
+    "min_year": "1st/2nd Year",
+    "link": "#",
+    "description": "Great starting point for freshers. Build basic WordPress and HTML/CSS sites for local charities."
+  },
+  {
+    "title": "Investment Banking Summer Analyst",
+    "company": "Goldman Sachs",
+    "location": "In-Office",
+    "category": "Finance",
+    "stipend": "₹1,00,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://www.goldmansachs.com/careers/",
+    "description": "Perform financial modeling, valuation analysis, and assist in M&A deal executions."
+  }
+]
