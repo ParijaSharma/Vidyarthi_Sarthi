@@ -1,8 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom"; // Keep Parija's router link
 
-const Navbar = ({ onOpenAuth }) => { // Keep your auth prop
+const Navbar = ({ onOpenAuth }) => { 
     return (
         <nav className="mx-6 pt-6 px-8 py-4 rounded-2xl flex justify-between items-center ">
             <div className="flex items-center gap-2">
@@ -14,15 +13,10 @@ const Navbar = ({ onOpenAuth }) => { // Keep your auth prop
             </div>
 
             <div className="hidden md:flex gap-6 text-sm text-slate-30">
-                <a href="#" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">About</a>
-                
-                {/* Parija's Dashboard Link */}
-                <Link to="/dashboard" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">
-                    Dashboard
-                </Link>
-                
-                <a href="#" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">Scholarships</a>
-                <a href="#" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">FAQ</a>
+                {/* Wired up with anchor tags for smooth scrolling */}
+                <a href="#about" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">About</a>
+                <a href="#scholarships" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">Scholarships</a>
+                <a href="#faq" className="text-white/70 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_rgba(250,204,21,0.8)] transition-all duration-300">FAQ</a>
             </div>
 
             {/* Your Auth Buttons */}
