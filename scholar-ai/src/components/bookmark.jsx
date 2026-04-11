@@ -3,11 +3,11 @@ import { Bookmark, Trash2, ExternalLink } from "lucide-react";
 
 const BookmarkPage = () => {
   const [bookmarks, setBookmarks] = useState([]);
-
+  const userId = localStorage.getItem("userId"); 
   //  FETCH BOOKMARKS
   const fetchBookmarks = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/bookmark/all/demo_user");
+      const res = await fetch(`http://localhost:5000/api/bookmark/all/${userId}`);
 
       if (!res.ok) {
         throw new Error("Failed to fetch bookmarks");

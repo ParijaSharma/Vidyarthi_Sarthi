@@ -13,6 +13,7 @@ import Dashboard from "./pages/dashboard";
 import InternshipDashboard from "./pages/InternshipDashboard";
 import ChatPage from "./pages/chat";
 import SavedScholarships from "./pages/SavedScholarships";
+import Verify from "./pages/Verify";
 
 // Layout
 import DashboardLayout from "./layout/DashboardLayout";
@@ -58,6 +59,7 @@ function App() {
         {/* Your Internship Dashboard */}
         <Route path="/internship-dashboard" element={<InternshipDashboard />} />
 
+        <Route path="/verify" element={<Verify />} />
         {/* Parija's Nested Dashboard Layout (UNTOUCHED) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />

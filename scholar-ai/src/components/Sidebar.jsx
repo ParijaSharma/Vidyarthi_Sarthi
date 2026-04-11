@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings, GraduationCap, Sparkles, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Settings, GraduationCap, Sparkles, Briefcase, ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -49,6 +49,7 @@ export default function Sidebar({ isOpen, toggleSidebar, isDark }) {
                 
                 <SidebarItem icon={<Sparkles size={20}/>} label="AI chat" path="/chat" isOpen={isOpen} isActive={location.pathname === '/chat'} isDark={isDark} />    
                 <SidebarItem icon={<Settings size={20}/>} label="Settings" path="#" isOpen={isOpen} isDark={isDark} />
+                <SidebarItem icon={<Bookmark size={20}/>} label= "Bookmarks" path="/dashboard/bookmarks" isOpen={isOpen} isActive={location.pathname === '/bookmarks'} isDark={isDark} />
             </nav>
 
             {/* Open button at bottom when closed */}

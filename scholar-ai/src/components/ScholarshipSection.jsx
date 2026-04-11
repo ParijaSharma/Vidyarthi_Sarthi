@@ -1,7 +1,11 @@
 import { ExternalLink, Bookmark,Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-
+import { useNavigate } from "react-router-dom"; 
 export default function ScholarshipSection({ data, userProfile, filterType, setFilterType }) {
+  const navigate = useNavigate();
+  const handleVerify = (scholarship) => {
+    navigate("/verify", { state: { scholarship } });
+};
   if (!data) {
     return <p className="text-gray-500 p-4">Loading recommendations...</p>;
   }
@@ -76,6 +80,7 @@ export default function ScholarshipSection({ data, userProfile, filterType, setF
           subtitle="Best scholarships based on your profile"
           data={best}
           type="best"
+          handleVerify={handleVerify}
         />
 
         <Section
@@ -83,6 +88,7 @@ export default function ScholarshipSection({ data, userProfile, filterType, setF
           subtitle="Maximum financial benefits"
           data={high}
           type="high"
+          handleVerify={handleVerify}
         />
 
         <Section
@@ -90,13 +96,14 @@ export default function ScholarshipSection({ data, userProfile, filterType, setF
           subtitle="Higher chances of selection"
           data={safe}
           type="safe"
+          handleVerify={handleVerify}
         />
       </div>
     </div>
   );
 }
 
-function Section({ title, subtitle, data, type }) {
+function Section({ title, subtitle, data, type, handleVerify  }) {
   const scrollRef = useRef();
   if (!data || data.length === 0) return null;
 
@@ -138,7 +145,7 @@ function Section({ title, subtitle, data, type }) {
           className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-6 px-4"
         >
           {data.map((sch, i) => (
-            <ScholarshipCard key={i} scholarship={sch} type={type} />
+            <ScholarshipCard key={i} scholarship={sch} type={type}  handleVerify={handleVerify}/>
           ))}
         </div>
       </div>
@@ -146,8 +153,9 @@ function Section({ title, subtitle, data, type }) {
   );
 }
 
-function ScholarshipCard({ scholarship, type }) {
+function ScholarshipCard({ scholarship, type,handleVerify }) {
   const match = Math.round(scholarship.score);
+  const userId = localStorage.getItem("userId"); 
   const [savedIds, setSavedIds] = useState([]);
 
   const baseStyle =
@@ -164,15 +172,15 @@ function ScholarshipCard({ scholarship, type }) {
   return text.charAt(0).toUpperCase() + text.slice(1);
   };
 
-    const handleSave = async (scholarship) => {
+  const handleSave = async (scholarship) => {
   try {
-    const res = await fetch("http://localhost:5000/api/bookmark/save", {
+    const res = await fetch("http://localhost:5000/api/bookmark/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        user_id: "demo_user",
+        user_id: userId,
         scholarship_id: scholarship.id || scholarship._id || scholarship.title,
         title: scholarship.title,
         amount: scholarship.amount || "N/A",
@@ -195,7 +203,7 @@ function ScholarshipCard({ scholarship, type }) {
 };
  
   return (
-    <div className={`${baseStyle} ${typeStyles[type]}`}>
+    <div className={`group ${baseStyle} ${typeStyles[type]}`}>
       <div>
         <div className="flex justify-between items-center mb-3">
           <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full font-medium">
@@ -231,6 +239,18 @@ function ScholarshipCard({ scholarship, type }) {
           </p>
         </div>
       </div>
+      <button
+      onClick={() => handleVerify(scholarship)}
+      className="
+        w-full py-2 rounded-lg
+        bg-indigo-100 text-indigo-700
+        opacity-0 group-hover:opacity-100
+        transition-all duration-300
+        hover:bg-indigo-200
+      "
+    >
+      🔍 Verify Eligibility
+    </button>
 
       <span className="flex flex-col gap-2 ">
       <a
