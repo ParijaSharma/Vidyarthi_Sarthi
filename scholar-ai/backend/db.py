@@ -4,4 +4,4 @@ from pymongo import MongoClient
 client = MongoClient("mongodb://localhost:27017/")
 
 # Replace 'scholar_db' with your actual database name, bro
-db = client.scholar_db
+db = client["vidyarthi_sarthi"]

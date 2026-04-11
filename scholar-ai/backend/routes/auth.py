@@ -7,7 +7,7 @@ auth_bp = Blueprint('auth', __name__)
 
 # Connect to MongoDB
 client = MongoClient("mongodb://localhost:27017/")
-db = client["Vidyarthi_database"]
+db = client["vidyarthi_sarthi"]
 users = db["users"]
 
 @auth_bp.route('/register', methods=['POST'])
@@ -34,7 +34,14 @@ def register():
     }
     
     result = users.insert_one(new_user)
-    return jsonify({"message": "User registered", "userId": str(result.inserted_id), "needsSetup": True}), 201
+    # Also returning fullName and email here just to be safe during registration
+    return jsonify({
+        "message": "User registered", 
+        "userId": str(result.inserted_id), 
+        "fullName": data.get("fullName", ""),
+        "email": data.get("email", ""),
+        "needsSetup": True
+    }), 201
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -47,8 +54,11 @@ def login():
     return jsonify({
         "message": "Login successful", 
         "userId": str(user["_id"]),
+        "fullName": user.get("fullName", "Guest User"), # <--- FIXED: Now sending the name
+        "email": user.get("email", ""),                 # <--- FIXED: Now sending the email
         "needsSetup": user.get("needsSetup", True),
-        "userPath": user.get("userPath")
+        "userPath": user.get("userPath"),
+        "preferences": user.get("preferences", {})
     }), 200
 
 @auth_bp.route('/save-preferences', methods=['POST'])

@@ -6,7 +6,7 @@ export default function AuthPanel({ isOpen, onClose }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoadingPin, setIsLoadingPin] = useState(false);
-  const [authLoading, setAuthLoading] = useState(false); // Added for button loading
+  const [authLoading, setAuthLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -17,6 +17,12 @@ export default function AuthPanel({ isOpen, onClose }) {
     state: "",
     education: "school",
   });
+
+  // This is the function that was missing/undefined bro
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleAuthAction = async () => {
     setAuthLoading(true);
@@ -39,12 +45,36 @@ export default function AuthPanel({ isOpen, onClose }) {
         return;
       }
 
-      // Save to local storage
+      // Save user info to local storage
       localStorage.setItem("userId", data.userId);
+      localStorage.setItem("userName", data.fullName || formData.fullName || "Guest User"); 
+      localStorage.setItem("userEmail", data.email || formData.email);
+
+      // --- FIX: Restore preferences to LocalStorage so Profile Modal works nga ---
+      if (!data.needsSetup && data.preferences && Object.keys(data.preferences).length > 0) {
+        if (data.userPath === "Internships") {
+          localStorage.setItem("internship_answers", JSON.stringify(data.preferences));
+        } else {
+          localStorage.setItem("scholarship_answers", JSON.stringify(data.preferences));
+          
+          const prefs = data.preferences;
+          const userProfile = {
+            level: prefs.academic_level === "Undergraduate" ? "undergraduate" : prefs.academic_level === "Postgraduate" ? "postgraduate" : "school",
+            field: (prefs.stream?.includes("Engineering") ? "engineering" : prefs.stream?.includes("Medical") ? "medical" : prefs.stream?.includes("Science") ? "science" : prefs.stream?.toLowerCase()) || "any",
+            performance: prefs.performance === "Above 90%" ? "high" : prefs.performance === "80% – 90%" ? "medium" : "low",
+            income: prefs.income === "Below ₹2.5 Lakhs" ? "low" : prefs.income === "₹2.5 – 6 Lakhs" ? "medium" : "high",
+            categories: prefs.special_category || [],
+            aspiration: prefs.aspiration?.toLowerCase() || "any",
+            gender: "any",
+            location_pref: "india",
+            priority: "balanced"
+          };
+          localStorage.setItem("user_profile", JSON.stringify(userProfile));
+        }
+      }
 
       onClose();
       
-      // If they need setup, ask questions. Otherwise bypass it directly to dashboard.
       if (data.needsSetup) {
         navigate('/questions');
       } else {
@@ -60,11 +90,6 @@ export default function AuthPanel({ isOpen, onClose }) {
     } finally {
       setAuthLoading(false);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePincodeChange = async (e) => {
@@ -155,7 +180,7 @@ export default function AuthPanel({ isOpen, onClose }) {
                     onClick={handleAuthAction}
                     disabled={authLoading}
                     className="w-full py-3 rounded-2xl font-semibold bg-[#f5b301] text-black shadow-lg hover:brightness-105 transition-all">
-                    {authLoading ? "Processing..." : "Login / Sign in with Gmail"}
+                    {authLoading ? "Processing..." : "Login / Sign in"}
                   </button>
                   <p className="text-white/80 mt-7 text-sm text-center">
                     Don’t have an account?{" "}
@@ -228,7 +253,7 @@ export default function AuthPanel({ isOpen, onClose }) {
                     onClick={handleAuthAction}
                     disabled={authLoading}
                     className="w-full py-3 mt-2 rounded-2xl font-semibold bg-[#f5b301] text-black shadow-lg hover:brightness-105 transition-all">
-                    {authLoading ? "Processing..." : "Create Account / Sign in with Gmail"}
+                    {authLoading ? "Processing..." : "Create Account / Sign in"}
                   </button>
                   <p className="text-white/80 mt-4 text-sm text-center">
                     Already have an account?{" "}
