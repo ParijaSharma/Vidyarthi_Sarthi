@@ -38,7 +38,6 @@ export default function Questions({onComplete}) {
             ? [initialQuestion, ...internshipQuestions]
             : [initialQuestion];
 
-    // PARIJA'S PROFILE BUILDERS
     function buildUserProfile(answers) {
         return {
             level:
@@ -75,7 +74,7 @@ export default function Questions({onComplete}) {
         `;
     }
 
-    const handleNext = (value) => {
+    const handleNext = async (value) => {
         const currentQ = activeQuestions[step];
         
         const updatedAnswers = {
@@ -95,6 +94,24 @@ export default function Questions({onComplete}) {
         } else {
             console.log("All answers:", updatedAnswers);
             
+            // Send the completed data to MongoDB using the userId we stored
+            const userId = localStorage.getItem("userId");
+            if (userId) {
+                try {
+                    await fetch("http://localhost:5000/api/auth/save-preferences", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            userId: userId,
+                            userPath: userPath,
+                            answers: updatedAnswers
+                        })
+                    });
+                } catch(err) {
+                    console.error("DB update failed bro:", err);
+                }
+            }
+            
             if (userPath === "Internships") {
                 localStorage.removeItem("scholarship_answers");
                 localStorage.setItem("internship_answers", JSON.stringify(updatedAnswers));
@@ -103,7 +120,6 @@ export default function Questions({onComplete}) {
             } else {
                 localStorage.removeItem("internship_answers"); 
                 
-                // PARIJA'S API LOGIC
                 const userProfile = buildUserProfile(updatedAnswers);
                 const userInput = buildUserInput(updatedAnswers);
 

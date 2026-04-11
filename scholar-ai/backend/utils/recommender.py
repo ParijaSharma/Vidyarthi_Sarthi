@@ -7,9 +7,76 @@ import math
 data = load_data()
 vectorizer, X = build_model(data)
 
+SYNONYMS = {
+    "postgraduate": ["pg", "masters"],
+    "phd": ["phd", "research", "doctoral"],
+    "pwd": ["pwd", "disabled", "specially abled"]
+}
 
+def diversify_results(indices, data, top_n):
+    selected = []
+    seen_types = set()
+
+    for i in indices:
+        s = data[i]
+
+        tags = []
+
+        # classify
+        if "phd" in str(s.get("level", "")).lower():
+            tags.append("phd")
+
+        if extract_amount_score(s.get("award", "")) > 100000:
+            tags.append("high_reward")
+
+        if extract_ease_score(s) > 2:
+            tags.append("easy")
+
+        if any(word in str(s.get("eligibility", "")).lower() for word in ["pwd","disabled"]):
+            tags.append("pwd")
+
+        # ensure diversity
+        if any(tag not in seen_types for tag in tags):
+            selected.append(i)
+            seen_types.update(tags)
+
+        if len(selected) >= top_n:
+            break
+
+    # fallback fill
+    if len(selected) < top_n:
+        for i in indices:
+            if i not in selected:
+                selected.append(i)
+            if len(selected) >= top_n:
+                break
+
+    return selected
+
+def match_with_synonyms(value, options):
+    if not value:
+        return False
+
+    value = value.lower()
+
+    # split input (important)
+    parts = re.split(r"[ /,-]+", value)
+
+    for opt in options:
+        opt = opt.lower()
+
+        # direct match
+        if any(part in opt for part in parts):
+            return True
+
+        # synonym match
+        for key, vals in SYNONYMS.items():
+            if key in parts:
+                if any(v in opt for v in vals):
+                    return True
+
+    return False
 # ---------------------- HELPERS ----------------------
-
 def extract_amount_score(text):
     if not text:
         return 0
@@ -103,7 +170,7 @@ def generate_reason(s, user_profile):
     fields = [f.lower() for f in s.get("field", [])]
     gender = s.get("gender", "").lower()
 
-    if user_profile.get("field") and user_profile["field"] in fields:
+    if match_with_synonyms(user_profile.get("field"), fields):
         reasons.append(f"matches your field ({user_profile['field']})")
 
     if gender != "any" and gender == user_profile.get("gender", "").lower():
@@ -112,6 +179,12 @@ def generate_reason(s, user_profile):
     if user_profile.get("location_pref") == "india" and s.get("location") in ["india", "any"]:
         reasons.append("available in India")
 
+    if match_with_synonyms(user_profile.get("aspiration"), [s.get("description","").lower()]):
+            reasons.append("supports your research/phd goal")
+
+    if match_with_synonyms(user_profile.get("categories"), [str(s.get("eligibility","")).lower()]):
+            reasons.append("eligible under your category")
+           
     amount = extract_amount_score(s.get("award", ""))
 
     if amount >= 100000:
@@ -167,12 +240,20 @@ def build_results(data, score_map, indices, user_profile):
 
 
 # ---------------------- MAIN FUNCTION ----------------------
+def normalize(x):
+    return x.lower().strip() if isinstance(x, str) else x
 
 def recommend(user_profile=None, user_input=None, top_n=5, page=1,limit=10,filter_type="live"):
-    user_profile = user_profile or {}
+    user_profile = {k: normalize(v) for k, v in (user_profile or {}).items()}
     # -------- Input --------
     if user_input is None and user_profile:
-        user_input = f"{user_profile.get('gender','')} {user_profile.get('field','')} {user_profile.get('level','')} scholarship"
+        user_input = user_input = f"""
+        {user_profile.get('field','')}
+        {user_profile.get('level','')}
+        {user_profile.get('aspiration','')}
+        {user_profile.get('categories','')}
+        scholarship
+        """
     if user_input is None:
         user_input = "scholarship"
 
@@ -194,26 +275,25 @@ def recommend(user_profile=None, user_input=None, top_n=5, page=1,limit=10,filte
                     continue
 
             elif filter_type == "always":
-    
-                if s.get("isUpcoming", False):
+                if not s.get("isAlways", False):
                     continue
-                                    
-            if user_profile.get("gender"):
-                if s.get("gender", "").lower() not in [user_profile["gender"].lower(), "any"]:
-                    continue
+                                               
+            # if user_profile.get("gender"):
+            #     if s.get("gender", "").lower() not in [user_profile["gender"].lower(), "any"]:
+            #         continue
 
-            if user_profile.get("location_pref") == "india":
-                if s.get("location", "").lower() not in ["india", "any"]:
-                    continue
+            # if user_profile.get("location_pref") == "india":
+            #     if s.get("location", "").lower() not in ["india", "any"]:
+            #         continue
 
-            if user_profile.get("level"):
-                if user_profile["level"] not in [lvl.lower() for lvl in s.get("level", [])]:
-                    continue
+            # if user_profile.get("level"):
+            #     if user_profile["level"] not in [lvl.lower() for lvl in s.get("level", [])]:
+            #         continue
 
-            if user_profile.get("field"):
-                if "any" not in [f.lower() for f in s.get("field", [])]:
-                    if user_profile["field"] not in [f.lower() for f in s.get("field", [])]:
-                        continue
+            # if user_profile.get("field"):
+            #     if "any" not in [f.lower() for f in s.get("field", [])]:
+            #         if user_profile["field"] not in [f.lower() for f in s.get("field", [])]:
+            #             continue
 
         filtered_indices.append(i)
 
@@ -223,12 +303,33 @@ def recommend(user_profile=None, user_input=None, top_n=5, page=1,limit=10,filte
             return 0
 
         score = 0
+        fields = [f.lower() for f in s.get("field", [])]
+        levels = [l.lower() for l in s.get("level", [])]
+           
+        eligibility = " ".join(s.get("eligibility", [])).lower()
+        desc = s.get("description", "").lower()
 
-        if user.get("field") and user.get("field") in [f.lower() for f in s.get("field", [])]:
+        if match_with_synonyms(user.get("field"), fields):
+            score += 3
+
+        # Level (handle pg/phd)
+        if match_with_synonyms(user.get("level"), levels):
             score += 2
+        #Aspiration (handle research)
+        if user.get("aspiration"):
+            if match_with_synonyms(user.get("aspiration"), [desc]):
+                score += 3
+         # Category (PwD)
+        if user.get("categories"):
+            if match_with_synonyms(user.get("categories"), [eligibility]):
+                score += 2
 
-        if s.get("gender", "").lower() == user.get("gender", "").lower():
-            score += 1
+        # Location
+        if user.get("location_pref") == "india":
+            if "india" in s.get("location", "").lower():
+                score += 2
+       
+       
 
         return score
 
@@ -237,7 +338,7 @@ def recommend(user_profile=None, user_input=None, top_n=5, page=1,limit=10,filte
 
     for i in filtered_indices:
         p = profile_score(data[i], user_profile)
-
+        p=min(p/10,1)
         amount = extract_amount_score(data[i].get("award", ""))
         amount_score = min(amount / 100000, 1)
 
@@ -245,21 +346,22 @@ def recommend(user_profile=None, user_input=None, top_n=5, page=1,limit=10,filte
         ease_score = max(min(ease_raw / 5, 1), -1)
 
         final = (
-            0.6 * scores[i] +
-            0.2 * p +
+            0.4 * scores[i] +
+            0.4 * p +
             0.1 * ease_score +
             0.1 * amount_score
         )
 
         # Boosts
-        if p >= 2:
+        if p >= 0.5:
             final += 0.05
+       
 
         if amount > 200000:
             final += 0.05
 
         # Small randomness (diversity)
-        final += random.uniform(0, 0.01)
+        final += random.uniform(0, 0.002)
 
         # Cap score
         final = min(final, 1.5)
@@ -268,17 +370,13 @@ def recommend(user_profile=None, user_input=None, top_n=5, page=1,limit=10,filte
 
     # -------- Edge Case --------
     if not filtered_scores:
-        return {
-            "best_matches": [],
-            "high_reward": [],
-            "safe_options": []
-        }
+        filtered_scores = [(i, scores[i]) for i in range(len(data))]
 
     # -------- Sorting --------
     filtered_scores.sort(key=lambda x: x[1], reverse=True)
 
     sorted_indices = [i for i, _ in filtered_scores]
-    best_indices = sorted_indices[:top_n]
+    best_indices = diversify_results(sorted_indices, data, top_n)
 
     high_reward_indices = get_high_reward(data, sorted_indices, top_n)
     safe_indices = get_safe_options(data, sorted_indices, top_n)

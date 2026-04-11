@@ -3,7 +3,7 @@ import StatCard from '../components/StatCard';
 import ScholarshipSection from '../components/ScholarshipSection';
 import { GraduationCap, FileText, Bookmark, Clock, User } from "lucide-react";
 import Questions from "./questions";
-import { useNavigate } from "react-router-dom"; // <-- Added for your redirect
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
     const [userProfile, setUserProfile] = useState(null);
@@ -12,82 +12,73 @@ export default function Dashboard() {
     const [filterType, setFilterType] = useState("live");
     const [savedCount, setSavedCount] = useState(0);
 
-    const navigate = useNavigate(); // <-- Initialize your navigator
+    const navigate = useNavigate();
 
-    // PARIJA'S API FETCH (UNTOUCHED)
+    //  LOAD USER PROFILE
     useEffect(() => {
-        if (userProfile) {
-            fetch("http://localhost:5000/api/recommend", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    user_profile: userProfile,
-                    filter_type: filterType,
-                    page: 1,
-                    limit: 4
-                })
-            })
-            .then(res => res.json())
-            .then(data => setRecommendations(data))
-            .catch(err => console.error(err));
-        }
-    }, [userProfile, filterType]);
-
-    // THE MERGED LOCAL STORAGE CHECK
-    useEffect(() => {
-        // 1. Your Internship Kick-out Logic
         const internshipProfile = localStorage.getItem("internship_answers");
         if(internshipProfile) {
             navigate("/internship-dashboard", { replace: true });
             return;
         }
 
-        // 2. Parija's Original Data Load
         const savedProfile = localStorage.getItem("user_profile");
         const savedInput = localStorage.getItem("user_input");
+
         if(savedProfile){
-            setUserProfile(JSON.parse(savedProfile));
+            setUserProfile(JSON.parse(savedProfile)); //  FIX: parse JSON
         }    
         if(savedInput){
             setUserInput(savedInput);
         }          
     }, [navigate]);
 
-    // PARIJA'S API FETCH 2 (UNTOUCHED)
+    //  FETCH RECOMMENDATIONS (FIXED PAYLOAD)
     useEffect(() => {
         if (userProfile) {
+            console.log("Sending profile:", userProfile); // DEBUG
+
             fetch("http://localhost:5000/api/recommend", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    user_profile: userProfile,
-                    type: "live",
-                    page: 1,
-                    limit: 4
-                })
+                body: JSON.stringify(userProfile) //  FIX: send directly
             })
             .then(res => res.json())
-            .then(data => setRecommendations(data))
+            .then(data => {
+                console.log("Recommendations:", data); // DEBUG
+                setRecommendations(data);
+            })
             .catch(err => console.error("Error fetching recommendations:", err));
         }
-    }, [userProfile]);
+    }, [userProfile, filterType]);
 
-    // PARIJA'S BOOKMARK FETCH (UNTOUCHED)
+    //  FETCH BOOKMARK COUNT
     useEffect(() => {
-        fetch("http://localhost:5000/api/bookmark/all")
-            .then(res => res.json())
-            .then(data => setSavedCount(data.length));
+        const userId = localStorage.getItem("user_id");
+
+        if (userId) {
+            fetch(`http://localhost:5000/api/bookmark/all/${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        setSavedCount(data.length);
+                    }
+                })
+                .catch(err => console.error(err));
+        }
     }, []);
 
-    // PARIJA'S EXACT RENDER (UNTOUCHED)
+   
     return (
         <>
             {!userProfile ? (
-                <Questions onComplete={(profile) => setUserProfile(profile)} />
+                <Questions onComplete={(profile) => {
+                    // store properly
+                    localStorage.setItem("user_profile", JSON.stringify(profile));
+                    setUserProfile(profile);
+                }} />
             ) : (
                 <div className="flex-1 bg-gray-50 min-h-screen">
                     <div className="max-w-7xl mx-auto px-6 py-6">
@@ -96,16 +87,15 @@ export default function Dashboard() {
                                 <User className="w-10 h-10 rounded-full p-2 text-white
                                         bg-gradient-to-br from-yellow-300 to-yellow-500
                                         flex items-center justify-center shadow-md"/>
-                                {userProfile ? `Welcome back!` : "Welcome back, Sarah!"}
+                                Welcome back!
                             </span>
                         </h1>
-                        
+                       
                         <p className="text-gray-500 mt-2">
-                            Showing scholarships for <b>{userProfile.stream}</b> students
+                            Showing scholarships for <b>{userProfile.field}</b> students
                             aiming for <b>{userProfile.aspiration}</b>.
                         </p>
 
-                        {/* main informaton area */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-5 mx-4">
                             <StatCard
                                 title="Total Scholarships"
@@ -132,8 +122,9 @@ export default function Dashboard() {
                                 color="bg-rose-500 text-white"
                             />
                         </div>
+
                         <div className="mt-4 px-2">
-                            <ScholarshipSection 
+                            <ScholarshipSection
                                 data={recommendations}
                                 userProfile={userProfile}
                                 filterType={filterType}

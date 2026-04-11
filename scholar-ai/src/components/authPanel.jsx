@@ -6,6 +6,7 @@ export default function AuthPanel({ isOpen, onClose }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoadingPin, setIsLoadingPin] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false); // Added for button loading
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -17,9 +18,48 @@ export default function AuthPanel({ isOpen, onClose }) {
     education: "school",
   });
 
-  const handleAuthAction = () => {
-    onClose();
-    navigate('/questions');
+  const handleAuthAction = async () => {
+    setAuthLoading(true);
+    try {
+      const url = isLogin 
+        ? "http://localhost:5000/api/auth/login" 
+        : "http://localhost:5000/api/auth/register";
+        
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        alert(data.error || "Authentication failed");
+        setAuthLoading(false);
+        return;
+      }
+
+      // Save to local storage
+      localStorage.setItem("userId", data.userId);
+
+      onClose();
+      
+      // If they need setup, ask questions. Otherwise bypass it directly to dashboard.
+      if (data.needsSetup) {
+        navigate('/questions');
+      } else {
+        if (data.userPath === "Internships") {
+          navigate('/internship-dashboard');
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    } catch (error) {
+      console.error("Auth error:", error);
+      alert("Server error, check if backend is running.");
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -113,8 +153,9 @@ export default function AuthPanel({ isOpen, onClose }) {
                   />
                   <button
                     onClick={handleAuthAction}
+                    disabled={authLoading}
                     className="w-full py-3 rounded-2xl font-semibold bg-[#f5b301] text-black shadow-lg hover:brightness-105 transition-all">
-                    Login / Sign in with Gmail
+                    {authLoading ? "Processing..." : "Login / Sign in with Gmail"}
                   </button>
                   <p className="text-white/80 mt-7 text-sm text-center">
                     Don’t have an account?{" "}
@@ -185,8 +226,9 @@ export default function AuthPanel({ isOpen, onClose }) {
                   </div>
                   <button
                     onClick={handleAuthAction}
+                    disabled={authLoading}
                     className="w-full py-3 mt-2 rounded-2xl font-semibold bg-[#f5b301] text-black shadow-lg hover:brightness-105 transition-all">
-                    Create Account / Sign in with Gmail
+                    {authLoading ? "Processing..." : "Create Account / Sign in with Gmail"}
                   </button>
                   <p className="text-white/80 mt-4 text-sm text-center">
                     Already have an account?{" "}

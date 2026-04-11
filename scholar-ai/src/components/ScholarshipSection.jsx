@@ -14,7 +14,7 @@ export default function ScholarshipSection({ data, userProfile, filterType, setF
     return true;
     });
   };
-  
+ 
   const best = removeDuplicates(data.best_matches);
   const high = removeDuplicates(data.high_reward);
   const safe = removeDuplicates(data.safe_options);
@@ -148,6 +148,7 @@ function Section({ title, subtitle, data, type }) {
 
 function ScholarshipCard({ scholarship, type }) {
   const match = Math.round(scholarship.score);
+  const [savedIds, setSavedIds] = useState([]);
 
   const baseStyle =
     "min-w-[300px] w-[300px] h-[400px] shrink-0 rounded-2xl shadow-sm hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-300 p-5 border hover:-translate-y-1 snap-start flex flex-col justify-between";
@@ -163,16 +164,36 @@ function ScholarshipCard({ scholarship, type }) {
   return text.charAt(0).toUpperCase() + text.slice(1);
   };
 
-    const handleSave = () => {
-    fetch("http://localhost:5000/api/bookmark/save", {
+    const handleSave = async (scholarship) => {
+  try {
+    const res = await fetch("http://localhost:5000/api/bookmark/save", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(scholarship)
-    })
-    .then(res => res.json())
-    .then(() => setSaved(true));
-  };
-  
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: "demo_user",
+        scholarship_id: scholarship.id || scholarship._id || scholarship.title,
+        title: scholarship.title,
+        amount: scholarship.amount || "N/A",
+        award: scholarship.award,
+        eligibility: scholarship.eligibility,
+        apply_link: scholarship.link
+      })
+    });
+
+    if (res.ok) {
+      const id = scholarship.id || scholarship._id || scholarship.title;
+
+      //  prevent duplicate state
+      setSavedIds(prev => prev.includes(id) ? prev : [...prev, id]);
+    }
+
+  } catch (err) {
+    console.error(err);
+  }
+};
+ 
   return (
     <div className={`${baseStyle} ${typeStyles[type]}`}>
       <div>
@@ -200,13 +221,13 @@ function ScholarshipCard({ scholarship, type }) {
 
         <div className="space-y-2 mb-4">
           <p className="text-sm text-gray-600 flex items-start gap-2">
-            <span>🏆</span> {scholarship.award}
+            <span></span> {scholarship.award || "Not specified"}
           </p>
           <p className="text-sm text-gray-500 line-clamp-2 flex items-start gap-2">
-            <span>🎓</span> {scholarship.eligibility}
+            <span></span> {scholarship.eligibility}
           </p>
           <p className="text-xs text-indigo-600 bg-indigo-50/70 border border-indigo-100 p-2 rounded-lg line-clamp-2">
-            💡 {scholarship.reason}
+             {scholarship.reason}
           </p>
         </div>
       </div>
@@ -220,10 +241,20 @@ function ScholarshipCard({ scholarship, type }) {
       >
         Apply Now <ExternalLink size={14} />
       </a>
-      <button onClick={() => handleSave(scholarship)}
-      >
-      <span className=" flex items-center gap-1 text-yellow-500 hover:text-yellow-600 text-lg"><Bookmark size={20} />save </span>
-    </button>
+      <button onClick={() => handleSave(scholarship)}>
+  <span
+    className={`flex items-center gap-1 text-lg transition
+      ${savedIds.includes(scholarship.id || scholarship._id || scholarship.title)
+        ? "text-green-500"
+        : "text-yellow-500 hover:text-yellow-600"}`}
+  >
+    <Bookmark size={20} />
+
+    {savedIds.includes(scholarship.id || scholarship._id || scholarship.title)
+      ? "Saved ✓"
+      : "Save"}
+  </span>
+</button>
     </span>    
     </div>
   );

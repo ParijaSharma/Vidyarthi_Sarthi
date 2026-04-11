@@ -1,22 +1,20 @@
 from flask import Flask
+from flask_cors import CORS
 from routes.recommend import recommended_bp
 from routes.bookmark import bookmark_bp
-from flask_cors import CORS
-
+from routes.auth import auth_bp
 app = Flask(__name__)
 
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "http://localhost:5173",
-            "http://localhost:5174"
-        ],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
-    }
-})
+# Explicitly allow your Vite frontend and required headers
+CORS(app, 
+     supports_credentials=True, 
+     origins=["http://localhost:5173"], 
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+     allow_headers=["Content-Type", "Authorization"])
 
-app.register_blueprint(recommended_bp, url_prefix="/api")
+# Registered blueprints
 app.register_blueprint(bookmark_bp, url_prefix="/api/bookmark")
+app.register_blueprint(recommended_bp, url_prefix="/api")
+app.register_blueprint(auth_bp, url_prefix="/api/auth")
 if __name__ == "__main__":
     app.run(debug=True)

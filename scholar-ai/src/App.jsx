@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
 import Hero from "./components/hero";
 import AuthPanel from "./components/authPanel";
+import Bookmark from "./components/bookmark";
 
 // Pages
 import Questions from "./pages/questions";
@@ -50,18 +51,19 @@ function App() {
       <Routes>
         {/* Landing page */}
         <Route path="/" element={<LandingPage />} />
-        
+       
         {/* Selection page: Scholarship or Internship? */}
-        <Route path="/questions" element={<Questions />} /> 
-        
+        <Route path="/questions" element={<Questions />} />
+       
         {/* Your Internship Dashboard */}
-        <Route path="/internship-dashboard" element={<InternshipDashboard />} /> 
+        <Route path="/internship-dashboard" element={<InternshipDashboard />} />
 
         {/* Parija's Nested Dashboard Layout (UNTOUCHED) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="saved" element={<SavedScholarships />} />
           <Route path="chat" element={<ChatPage />} />
+          <Route path="bookmarks" element={<Bookmark />} />
         </Route>
       </Routes>
   );
