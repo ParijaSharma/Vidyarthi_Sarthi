@@ -9,7 +9,7 @@ const Navbar = ({ onOpenAuth }) => {
                     icon={faGraduationCap}
                     className="text-yellow-400 text-2xl"
                 />
-                <span className="text-3xl font-semibold">Scholar AI</span>
+                <span className="text-3xl font-semibold">Vidyarthi-Sarthi</span>
             </div>
 
             <div className="hidden md:flex gap-6 text-sm text-slate-30">

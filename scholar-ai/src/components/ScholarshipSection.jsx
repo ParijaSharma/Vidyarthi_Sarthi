@@ -1,7 +1,7 @@
 import { ExternalLink, Bookmark,Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
-export default function ScholarshipSection({ data, userProfile, filterType, setFilterType }) {
+export default function ScholarshipSection({ data, userProfile, filterType, setFilterType, refreshSavedCount }) {
   const navigate = useNavigate();
   const handleVerify = (scholarship) => {
     navigate("/verify", { state: { scholarship } });
@@ -81,6 +81,7 @@ export default function ScholarshipSection({ data, userProfile, filterType, setF
           data={best}
           type="best"
           handleVerify={handleVerify}
+          refreshSavedCount={refreshSavedCount}
         />
 
         <Section
@@ -89,6 +90,7 @@ export default function ScholarshipSection({ data, userProfile, filterType, setF
           data={high}
           type="high"
           handleVerify={handleVerify}
+          refreshSavedCount={refreshSavedCount}
         />
 
         <Section
@@ -97,13 +99,14 @@ export default function ScholarshipSection({ data, userProfile, filterType, setF
           data={safe}
           type="safe"
           handleVerify={handleVerify}
+          refreshSavedCount={refreshSavedCount}
         />
       </div>
     </div>
   );
 }
 
-function Section({ title, subtitle, data, type, handleVerify  }) {
+function Section({ title, subtitle, data, type, handleVerify, refreshSavedCount }) {
   const scrollRef = useRef();
   if (!data || data.length === 0) return null;
 
@@ -145,7 +148,7 @@ function Section({ title, subtitle, data, type, handleVerify  }) {
           className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-6 px-4"
         >
           {data.map((sch, i) => (
-            <ScholarshipCard key={i} scholarship={sch} type={type}  handleVerify={handleVerify}/>
+            <ScholarshipCard key={i} scholarship={sch} type={type}  handleVerify={handleVerify} refreshSavedCount={refreshSavedCount}/>
           ))}
         </div>
       </div>
@@ -153,7 +156,7 @@ function Section({ title, subtitle, data, type, handleVerify  }) {
   );
 }
 
-function ScholarshipCard({ scholarship, type,handleVerify }) {
+function ScholarshipCard({ scholarship, type,handleVerify, refreshSavedCount }) {
   const match = Math.round(scholarship.score);
   const userId = localStorage.getItem("userId"); 
   const [savedIds, setSavedIds] = useState([]);
@@ -173,34 +176,46 @@ function ScholarshipCard({ scholarship, type,handleVerify }) {
   };
 
   const handleSave = async (scholarship) => {
-  try {
-    const res = await fetch("http://localhost:5000/api/bookmark/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        user_id: userId,
-        scholarship_id: scholarship.id || scholarship._id || scholarship.title,
-        title: scholarship.title,
-        amount: scholarship.amount || "N/A",
-        award: scholarship.award,
-        eligibility: scholarship.eligibility,
-        apply_link: scholarship.link
-      })
-    });
+    const userId = localStorage.getItem("userId");
 
-    if (res.ok) {
-      const id = scholarship.id || scholarship._id || scholarship.title;
-
-      //  prevent duplicate state
-      setSavedIds(prev => prev.includes(id) ? prev : [...prev, id]);
+    if (!userId) {
+      alert("User not logged in");
+      return;
     }
 
-  } catch (err) {
-    console.error(err);
-  }
-};
+    try {
+      const res = await fetch("http://localhost:5000/api/bookmark/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          scholarship_id: scholarship.id || scholarship._id || scholarship.title,
+          title: scholarship.title,
+          amount: scholarship.amount || "N/A",
+          award: scholarship.award,
+          eligibility: scholarship.eligibility,
+          apply_link: scholarship.link
+        })
+      });
+
+      if (res.ok) {
+        const id = scholarship.id || scholarship._id || scholarship.title;
+
+        // ✅ Update UI instantly
+        setSavedIds(prev => prev.includes(id) ? prev : [...prev, id]);
+
+        // 🔥 REAL-TIME DASHBOARD UPDATE
+        if (typeof refreshSavedCount === "function") {
+          refreshSavedCount();
+        }
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
  
   return (
     <div className={`group ${baseStyle} ${typeStyles[type]}`}>

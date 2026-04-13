@@ -10,6 +10,10 @@ export default function ProfileModal({ onClose }) {
     const [editField, setEditField] = useState('');
     const [editAspiration, setEditAspiration] = useState('');
 
+    const [currentPath, setCurrentPath] = useState(
+      localStorage.getItem("currentPath") || "Scholarships"
+    );
+
     useEffect(() => {
         const internshipData = localStorage.getItem('internship_answers');
         const scholarshipData = localStorage.getItem('scholarship_answers');
@@ -67,6 +71,16 @@ export default function ProfileModal({ onClose }) {
         // Force reload so dashboards update with new data nga
         window.location.reload();
     };
+    const switchPath = (path) => {
+    localStorage.setItem("currentPath", path);
+    setCurrentPath(path);
+
+    if (path === "Internships") {
+        window.location.href = "/internship-dashboard";
+    } else {
+        window.location.href = "/dashboard";
+    }
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -108,6 +122,38 @@ export default function ProfileModal({ onClose }) {
 
                 {/* Body Content - Scrollable */}
                 <div className="p-6 overflow-y-auto custom-scrollbar">
+                    {/*  Track Switch Toggle */}
+                    <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                    <p className="text-xs text-gray-500 font-medium mb-3 uppercase tracking-wider">
+                        Switch Track
+                    </p>
+
+                    <div className="flex gap-3">
+                        <button
+                        onClick={() => switchPath("Scholarships")}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                            ${currentPath === "Scholarships"
+                            ? "bg-yellow-400 text-black shadow-md"
+                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                            }`}
+                        >
+                        <GraduationCap size={16} />
+                        Scholarships
+                        </button>
+
+                        <button
+                        onClick={() => switchPath("Internships")}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                            ${currentPath === "Internships"
+                            ? "bg-indigo-500 text-white shadow-md"
+                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                            }`}
+                        >
+                        <Briefcase size={16} />
+                        Internships
+                        </button>
+                    </div>
+                    </div>
                     
                     {isEditing && (
                         <div className="mb-8 p-5 bg-blue-50/50 rounded-xl border border-blue-100 space-y-4">

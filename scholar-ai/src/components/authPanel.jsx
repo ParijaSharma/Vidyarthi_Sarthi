@@ -24,45 +24,84 @@ export default function AuthPanel({ isOpen, onClose }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAuthAction = async () => {
+    const handleAuthAction = async () => {
     setAuthLoading(true);
     try {
-      const url = isLogin 
-        ? "http://localhost:5000/api/auth/login" 
-        : "http://localhost:5000/api/auth/register";
-        
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        alert(data.error || "Authentication failed");
-        setAuthLoading(false);
-        return;
+      let data;
+
+      if (isLogin) {
+        //  LOGIN
+        const response = await fetch("http://localhost:5000/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+
+        data = await response.json();
+
+        if (!response.ok) {
+          alert(data.error || "Login failed");
+          return;
+        }
+
+      } else {
+        //  REGISTER
+        const registerRes = await fetch("http://localhost:5000/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+
+        const registerData = await registerRes.json();
+
+        if (!registerRes.ok) {
+          alert(registerData.error || "Registration failed");
+          return;
+        }
+
+        //  AUTO LOGIN AFTER REGISTER
+        const loginRes = await fetch("http://localhost:5000/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password
+          })
+        });
+
+        data = await loginRes.json();
+
+        if (!loginRes.ok) {
+          alert("Registered! Please login manually.");
+          setIsLogin(true);
+          return;
+        }
       }
 
-      // Save user info to local storage
+      //  STORE USER (common for both login + register)
       localStorage.setItem("userId", data.userId);
-      localStorage.setItem("userName", data.fullName || formData.fullName || "Guest User"); 
+      localStorage.setItem("userName", data.fullName || formData.fullName || "User");
       localStorage.setItem("userEmail", data.email || formData.email);
 
-      // --- FIX: Restore preferences to LocalStorage so Profile Modal works nga ---
+      //  KEEP YOUR EXISTING INTERNSHIP/SCHOLARSHIP LOGIC
       if (!data.needsSetup && data.preferences && Object.keys(data.preferences).length > 0) {
         if (data.userPath === "Internships") {
           localStorage.setItem("internship_answers", JSON.stringify(data.preferences));
         } else {
           localStorage.setItem("scholarship_answers", JSON.stringify(data.preferences));
-          
+
           const prefs = data.preferences;
           const userProfile = {
-            level: prefs.academic_level === "Undergraduate" ? "undergraduate" : prefs.academic_level === "Postgraduate" ? "postgraduate" : "school",
-            field: (prefs.stream?.includes("Engineering") ? "engineering" : prefs.stream?.includes("Medical") ? "medical" : prefs.stream?.includes("Science") ? "science" : prefs.stream?.toLowerCase()) || "any",
-            performance: prefs.performance === "Above 90%" ? "high" : prefs.performance === "80% – 90%" ? "medium" : "low",
-            income: prefs.income === "Below ₹2.5 Lakhs" ? "low" : prefs.income === "₹2.5 – 6 Lakhs" ? "medium" : "high",
+            level: prefs.academic_level === "Undergraduate" ? "undergraduate" :
+                  prefs.academic_level === "Postgraduate" ? "postgraduate" : "school",
+            field: (prefs.stream?.includes("Engineering") ? "engineering" :
+                  prefs.stream?.includes("Medical") ? "medical" :
+                  prefs.stream?.includes("Science") ? "science" :
+                  prefs.stream?.toLowerCase()) || "any",
+            performance: prefs.performance === "Above 90%" ? "high" :
+                        prefs.performance === "80% – 90%" ? "medium" : "low",
+            income: prefs.income === "Below ₹2.5 Lakhs" ? "low" :
+                    prefs.income === "₹2.5 – 6 Lakhs" ? "medium" : "high",
             categories: prefs.special_category || [],
             aspiration: prefs.aspiration?.toLowerCase() || "any",
             gender: "any",
@@ -74,19 +113,22 @@ export default function AuthPanel({ isOpen, onClose }) {
       }
 
       onClose();
-      
+
       if (data.needsSetup) {
-        navigate('/questions');
+      navigate('/questions');
+    } else {
+      const savedPath = localStorage.getItem("currentPath");
+
+      if (savedPath === "Internships") {
+        navigate('/internship-dashboard');
       } else {
-        if (data.userPath === "Internships") {
-          navigate('/internship-dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       }
+    }
+
     } catch (error) {
       console.error("Auth error:", error);
-      alert("Server error, check if backend is running.");
+      alert("Server error");
     } finally {
       setAuthLoading(false);
     }

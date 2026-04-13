@@ -4,6 +4,9 @@ from PIL import Image
 import os
 import cv2
 import re
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 ocr_bp = Blueprint("ocr", __name__)
 
@@ -90,9 +93,7 @@ def ocr_upload():
 
         eligible, reason = verify(data)
 
-        # =========================
-        # 📊 CONFIDENCE (basic)
-        # =========================
+ 
         confidence = "low"
         if len(text) > 100:
             confidence = "medium"

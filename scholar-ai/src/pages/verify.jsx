@@ -23,7 +23,7 @@ export default function Verify() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:5000/api/ocr-upload", {
+      const res = await fetch("http://localhost:5000/api/ocr/ocr-upload", {
         method: "POST",
         body: formData
       });
