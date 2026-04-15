@@ -148,5 +148,406 @@
     "min_year": "Pre-final Year",
     "link": "https://www.goldmansachs.com/careers/",
     "description": "Perform financial modeling, valuation analysis, and assist in M&A deal executions."
+  },
+  {
+    "title": "Ethical Hacking Intern",
+    "company": "HackerOne",
+    "location": "Remote",
+    "category": "Cybersecurity",
+    "stipend": "₹40,000/month",
+    "min_year": "Any",
+    "link": "https://www.hackerone.com/careers",
+    "description": "Perform vulnerability assessments, bug bounty triaging, and report security flaws in web applications."
+  },
+  {
+    "title": "React Frontend Intern",
+    "company": "Cred",
+    "location": "In-Office",
+    "category": "Software Development",
+    "stipend": "₹60,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://careers.cred.club/",
+    "description": "Develop glassmorphism UI components using React and Tailwind CSS for the main app dashboard."
+  },
+  {
+    "title": "Cloud Security Trainee",
+    "company": "Amazon Web Services",
+    "location": "Hybrid",
+    "category": "Cybersecurity",
+    "stipend": "₹85,000/month",
+    "min_year": "Final Year",
+    "link": "https://amazon.jobs/en/teams/internships",
+    "description": "Assist the identity and access management (IAM) team in auditing AWS infrastructure."
+  },
+  {
+    "title": "Full Stack Developer Intern",
+    "company": "Zepto",
+    "location": "In-Office",
+    "category": "Software Development",
+    "stipend": "₹50,000/month",
+    "min_year": "1st/2nd Year",
+    "link": "https://www.zeptonow.com/careers",
+    "description": "Build and optimize fast-delivery routing APIs using Python and manage frontend states."
+  },
+  {
+    "title": "Game Engine Programmer Intern",
+    "company": "Rockstar India",
+    "location": "In-Office",
+    "category": "Software Development",
+    "stipend": "₹70,000/month",
+    "min_year": "Final Year",
+    "link": "https://www.rockstargames.com/careers",
+    "description": "Write C++ code for game physics and optimize rendering pipelines for upcoming AAA titles."
+  },
+  {
+    "title": "FinTech Analyst Intern",
+    "company": "HDFC Bank",
+    "location": "Hybrid",
+    "category": "Finance",
+    "stipend": "₹30,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://www.hdfcbank.com/personal/about-us/careers",
+    "description": "Analyze digital transaction data and help build models to detect fraudulent activities."
+  },
+  {
+    "title": "UI/UX Research Intern",
+    "company": "Canva",
+    "location": "Remote",
+    "category": "UI/UX Design",
+    "stipend": "₹45,000/month",
+    "min_year": "Any",
+    "link": "https://life.canva.com/careers/",
+    "description": "Conduct user research, design dark mode interfaces, and build interactive prototypes."
+  },
+  {
+    "title": "Machine Learning Intern",
+    "company": "Jio",
+    "location": "Hybrid",
+    "category": "Data Science & AI",
+    "stipend": "₹35,000/month",
+    "min_year": "Recent Graduate",
+    "link": "https://careers.jio.com/",
+    "description": "Develop and deploy recommendation algorithms using Python and TensorFlow."
+  },
+  {
+    "title": "SOC Analyst Intern",
+    "company": "KPMG India",
+    "location": "In-Office",
+    "category": "Cybersecurity",
+    "stipend": "₹40,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://kpmg.com/in/en/home/careers.html",
+    "description": "Monitor Security Operations Center alerts, analyze logs with Wireshark, and write incident reports."
+  },
+  {
+    "title": "DevOps Engineering Intern",
+    "company": "Postman",
+    "location": "Remote",
+    "category": "Software Development",
+    "stipend": "₹55,000/month",
+    "min_year": "Final Year",
+    "link": "https://www.postman.com/company/careers/",
+    "description": "Automate CI/CD pipelines, manage Docker containers, and write testing scripts."
+  },
+  {
+    "title": "Vulnerability Assessment Intern",
+    "company": "PwC India",
+    "location": "Delhi NCR",
+    "category": "Cybersecurity",
+    "stipend": "₹35,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://pwc.in/careers",
+    "description": "Run automated and manual penetration tests using Kali Linux, Nmap, and Wireshark."
+  },
+  {
+    "title": "Malware Researcher Intern",
+    "company": "Quick Heal",
+    "location": "Remote",
+    "category": "Cybersecurity",
+    "stipend": "₹30,000/month",
+    "min_year": "Any",
+    "link": "https://www.quickheal.co.in/careers",
+    "description": "Develop Python scripts to analyze sandbox behavior, detect Trojans, and integrate with threat APIs."
+  },
+  {
+    "title": "Frontend Engineer Intern",
+    "company": "Groww",
+    "location": "Hybrid",
+    "category": "Software Development",
+    "stipend": "₹40,000/month",
+    "min_year": "1st/2nd Year",
+    "link": "https://groww.in/careers",
+    "description": "Build high-performance web components using React, Tailwind CSS, and implement seamless dark mode themes."
+  },
+  {
+    "title": "Gameplay Programmer Intern",
+    "company": "Ubisoft",
+    "location": "In-Office",
+    "category": "Software Development",
+    "stipend": "₹50,000/month",
+    "min_year": "Final Year",
+    "link": "https://india.ubisoft.com/",
+    "description": "Write efficient C++ code for multiplayer server synchronization and fast-paced game physics."
+  },
+  {
+    "title": "Game Design Intern",
+    "company": "Roblox Studio",
+    "location": "Remote",
+    "category": "Software Development",
+    "stipend": "₹60,000/month",
+    "min_year": "Any",
+    "link": "https://careers.roblox.com/",
+    "description": "Create engaging multiplayer experiences, script mechanics, and optimize assets for high performance."
+  },
+  {
+    "title": "Threat Intelligence Intern",
+    "company": "Mandiant (Google Cloud)",
+    "location": "Remote",
+    "category": "Cybersecurity",
+    "stipend": "₹65,000/month",
+    "min_year": "Final Year",
+    "link": "https://careers.google.com/mandiant/",
+    "description": "Analyze APT groups, write Yara rules, and develop scripts in Python to scrape threat indicators."
+  },
+  {
+    "title": "Mobile App Developer Intern",
+    "company": "Dream11",
+    "location": "Mumbai (In-Office)",
+    "category": "Software Development",
+    "stipend": "₹70,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://about.dream11.in/careers",
+    "description": "Build high-performance React Native modules for millions of concurrent fantasy sports users."
+  },
+  {
+    "title": "Blockchain Engineering Intern",
+    "company": "Polygon",
+    "location": "Remote",
+    "category": "Software Development",
+    "stipend": "₹80,000/month",
+    "min_year": "Any",
+    "link": "https://polygon.technology/careers",
+    "description": "Write smart contracts using Solidity and help scale Web3 infrastructure using Go and Rust."
+  },
+  {
+    "title": "Data Engineering Intern",
+    "company": "Uber",
+    "location": "Hybrid",
+    "category": "Data Science & AI",
+    "stipend": "₹90,000/month",
+    "min_year": "Final Year",
+    "link": "https://www.uber.com/in/en/careers/",
+    "description": "Build scalable ETL pipelines using Apache Spark, Kafka, and Python to process ride data."
+  },
+  {
+    "title": "Identity & Access Management Intern",
+    "company": "Okta",
+    "location": "Remote",
+    "category": "Cybersecurity",
+    "stipend": "₹55,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://www.okta.com/company/careers/",
+    "description": "Help design secure SSO protocols, audit user access logs, and integrate OAuth2 solutions."
+  },
+  {
+    "title": "Computer Vision Intern",
+    "company": "Tesla",
+    "location": "Remote",
+    "category": "Data Science & AI",
+    "stipend": "₹1,20,000/month",
+    "min_year": "Final Year",
+    "link": "https://www.tesla.com/careers",
+    "description": "Train deep learning models for object detection and lane segmentation using PyTorch and C++."
+  },
+  {
+    "title": "Quality Assurance (QA) Intern",
+    "company": "MakeMyTrip",
+    "location": "Hybrid",
+    "category": "Software Development",
+    "stipend": "₹25,000/month",
+    "min_year": "1st/2nd Year",
+    "link": "https://careers.makemytrip.com/",
+    "description": "Write automated end-to-end test scripts using Selenium and Cypress for the flight booking portal."
+  },
+  {
+    "title": "AR/VR Development Intern",
+    "company": "Meta",
+    "location": "Remote",
+    "category": "Software Development",
+    "stipend": "₹1,00,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://www.metacareers.com/",
+    "description": "Develop interactive 3D environments for the Quest headset using Unity and C#."
+  },
+  {
+    "title": "Cryptography Research Intern",
+    "company": "IBM Research",
+    "location": "In-Office",
+    "category": "Cybersecurity",
+    "stipend": "₹75,000/month",
+    "min_year": "Final Year",
+    "link": "https://www.ibm.com/in-en/careers",
+    "description": "Research post-quantum cryptographic algorithms and test their implementation on mainframes."
+  },
+  {
+    "title": "Growth Product Intern",
+    "company": "Bumble",
+    "location": "Hybrid",
+    "category": "Product Management",
+    "stipend": "₹45,000/month",
+    "min_year": "Any",
+    "link": "https://bumble.com/en/jobs",
+    "description": "Analyze user retention metrics, run A/B tests on new swiping features, and present data insights."
+  },
+  {
+    "title": "Embedded Systems Intern",
+    "company": "Ather Energy",
+    "location": "Bengaluru (In-Office)",
+    "category": "Hardware & IoT",
+    "stipend": "₹40,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://www.atherenergy.com/careers",
+    "description": "Program microcontrollers in C/C++ and optimize battery management systems for electric scooters."
+  },
+  {
+    "title": "Technical Writer Intern",
+    "company": "DigitalOcean",
+    "location": "Remote",
+    "category": "Content & Media",
+    "stipend": "₹30,000/month",
+    "min_year": "1st/2nd Year",
+    "link": "https://www.digitalocean.com/careers",
+    "description": "Write clear, concise tutorials for deploying Linux servers, configuring Nginx, and setting up firewalls."
+  },
+  {
+    "title": "NLP Data Scientist Intern",
+    "company": "OpenAI",
+    "location": "Remote",
+    "category": "Data Science & AI",
+    "stipend": "₹1,50,000/month",
+    "min_year": "Final Year",
+    "link": "https://openai.com/careers",
+    "description": "Curate high-quality instruction-tuning datasets and evaluate model responses for reasoning tasks."
+  },
+  {
+    "title": "UI Motion Designer Intern",
+    "company": "LottieFiles",
+    "location": "Remote",
+    "category": "UI/UX Design",
+    "stipend": "₹35,000/month",
+    "min_year": "Any",
+    "link": "https://lottiefiles.com/careers",
+    "description": "Create smooth micro-interactions and export lightweight vector animations for web developers."
+  },
+  {
+    "title": "Network Engineering Intern",
+    "company": "Juniper Networks",
+    "location": "Hybrid",
+    "category": "Cybersecurity",
+    "stipend": "₹50,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://careers.juniper.net/",
+    "description": "Configure routers/switches, troubleshoot TCP/IP protocols, and automate network setups with Ansible."
+  },
+  {
+    "title": "Digital Forensics Intern",
+    "company": "CBI (Cyber Crime Division)",
+    "location": "Delhi NCR (In-Office)",
+    "category": "Cybersecurity",
+    "stipend": "Unpaid",
+    "min_year": "Final Year",
+    "link": "https://cbi.gov.in/",
+    "description": "Assist in recovering deleted data from hard drives, analyzing mobile extraction reports, and writing legal technical summaries."
+  },
+  {
+    "title": "Site Reliability Engineer (SRE) Intern",
+    "company": "LinkedIn",
+    "location": "Hybrid",
+    "category": "Software Development",
+    "stipend": "₹85,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://careers.linkedin.com/",
+    "description": "Monitor system uptime, write automated recovery scripts in Python, and manage Kubernetes clusters."
+  },
+  {
+    "title": "Game Environment Artist Intern",
+    "company": "EA Sports",
+    "location": "Hybrid",
+    "category": "Design & Art",
+    "stipend": "₹45,000/month",
+    "min_year": "Any",
+    "link": "https://www.ea.com/careers",
+    "description": "Model 3D assets in Blender, apply realistic textures, and optimize rendering for console hardware."
+  },
+  {
+    "title": "Venture Capital Analyst Intern",
+    "company": "Sequoia Capital",
+    "location": "In-Office",
+    "category": "Finance",
+    "stipend": "₹1,00,000/month",
+    "min_year": "Final Year",
+    "link": "https://www.sequoiacap.com/jobs/",
+    "description": "Scout early-stage AI/SaaS startups, perform market research, and assist in technical due diligence."
+  },
+  {
+    "title": "SEO & Content Marketing Intern",
+    "company": "HubSpot",
+    "location": "Remote",
+    "category": "Marketing & Sales",
+    "stipend": "₹25,000/month",
+    "min_year": "1st/2nd Year",
+    "link": "https://www.hubspot.com/careers",
+    "description": "Conduct keyword research, optimize blog post HTML tags, and track organic traffic growth."
+  },
+  {
+    "title": "Hardware Security Intern",
+    "company": "Intel",
+    "location": "In-Office",
+    "category": "Hardware & IoT",
+    "stipend": "₹65,000/month",
+    "min_year": "Final Year",
+    "link": "https://jobs.intel.com/",
+    "description": "Perform side-channel attack simulations and verify cryptographic hardware modules."
+  },
+  {
+    "title": "Robotics Software Intern",
+    "company": "Boston Dynamics",
+    "location": "Remote",
+    "category": "Data Science & AI",
+    "stipend": "₹1,10,000/month",
+    "min_year": "Pre-final Year",
+    "link": "https://www.bostondynamics.com/careers",
+    "description": "Develop path-planning algorithms using C++ and ROS (Robot Operating System) for quadruped robots."
+  },
+  {
+    "title": "Bug Bounty Triager Intern",
+    "company": "Bugcrowd",
+    "location": "Remote",
+    "category": "Cybersecurity",
+    "stipend": "₹40,000/month",
+    "min_year": "Any",
+    "link": "https://www.bugcrowd.com/about/careers/",
+    "description": "Verify incoming vulnerability reports, reproduce XSS/SQLi exploits, and communicate with researchers."
+  },
+  {
+    "title": "B2B SaaS Sales Intern",
+    "company": "Freshworks",
+    "location": "Hybrid",
+    "category": "Marketing & Sales",
+    "stipend": "₹20,000/month + Commission",
+    "min_year": "Pre-final Year",
+    "link": "https://www.freshworks.com/company/careers/",
+    "description": "Conduct cold outreach, demo CRM software to potential clients, and maintain the sales pipeline."
+  },
+  {
+    "title": "Core Java Developer Intern",
+    "company": "Oracle",
+    "location": "In-Office",
+    "category": "Software Development",
+    "stipend": "₹60,000/month",
+    "min_year": "Final Year",
+    "link": "https://careers.oracle.com/",
+    "description": "Optimize enterprise database connectivity drivers and contribute to open-source JDK modules."
   }
+
 ]
