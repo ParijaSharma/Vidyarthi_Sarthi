@@ -53,19 +53,23 @@ function App() {
         {/* Landing page */}
         <Route path="/" element={<LandingPage />} />
        
-        {/* Selection page: Scholarship or Internship? */}
+        {/* Selection page */}
         <Route path="/questions" element={<Questions />} />
        
-        {/* Your Internship Dashboard */}
+        {/* Internship Dashboard */}
         <Route path="/internship-dashboard" element={<InternshipDashboard />} />
 
         <Route path="/verify" element={<Verify />} />
-        {/* Parija's Nested Dashboard Layout (UNTOUCHED) */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="saved" element={<SavedScholarships />} />
-          <Route path="chat" element={<ChatPage />} />
-          <Route path="bookmarks" element={<Bookmark />} />
+        
+        {/* 🔥 THE FIX: Pathless Layout Route 🔥 */}
+        <Route element={<DashboardLayout />}>
+          {/* We add /dashboard to these explicitly */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/saved" element={<SavedScholarships />} />
+          <Route path="/dashboard/bookmarks" element={<Bookmark />} />
+          
+          {/* BOOM: /chat is at the root URL, but STILL gets the Topbar & Sidebar */}
+          <Route path="/chat" element={<ChatPage />} />
         </Route>
       </Routes>
   );
