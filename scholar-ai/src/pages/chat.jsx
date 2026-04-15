@@ -25,21 +25,38 @@ export default function ChatPage() {
     if (!input.trim()) return;
 
     const userMsg = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMsg]);
+    // Create a new array with the previous messages plus the new user message
+    const updatedMessages = [...messages, userMsg];
+    
+    setMessages(updatedMessages);
     setInput('');
     setIsLoading(true);
 
     try {
-      // 🚀 Your Ollama Backend Call Will Go Here 🚀
+      // 🚀 Direct call to local Ollama API 🚀
+      const response = await fetch('http://localhost:11434/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3', // Change this if you pulled 'mistral' or wtv else
+          messages: updatedMessages,
+          stream: false // Set to true later if you want typewriter effect
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ollama server returned ${response.status} nga`);
+      }
+
+      const data = await response.json();
       
-      // Fake delay for testing UI
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { role: 'assistant', content: "This is a dummy response. Connect your API, bro!" }]);
-        setIsLoading(false);
-      }, 1000);
+      // Append the AI's response to the chat
+      setMessages((prev) => [...prev, data.message]);
+      setIsLoading(false);
 
     } catch (error) {
       console.error("Error fetching AI response:", error);
+      setMessages((prev) => [...prev, { role: 'assistant', content: "Failed to connect. Is Ollama running on your machine, bro?" }]);
       setIsLoading(false);
     }
   };
