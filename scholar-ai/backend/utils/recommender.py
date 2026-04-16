@@ -8,9 +8,13 @@ data = load_data()
 vectorizer, X = build_model(data)
 
 SYNONYMS = {
-    "postgraduate": ["pg", "masters"],
-    "phd": ["phd", "research", "doctoral"],
-    "pwd": ["pwd", "disabled", "specially abled"]
+    "postgraduate": ["pg", "masters", "mtech", "msc", "mba", "ma", "mcom"],
+    "undergraduate": ["ug", "btech", "be", "bsc", "bba", "ba", "bcom", "mbbs"],
+    "phd": ["research", "doctoral", "fellowship", "jrf", "srf"],
+    "school": ["class 10", "class 12", "ssc", "hsc", "secondary", "intermediate"],
+    "pwd": ["disabled", "specially abled", "handicapped", "divyangjan"],
+    "engineering": ["btech", "be", "mtech", "technical", "it"],
+    "medical": ["mbbs", "bds", "ayush", "nursing", "pharmacy"]
 }
 
 def diversify_results(indices, data, top_n):
@@ -53,28 +57,30 @@ def diversify_results(indices, data, top_n):
 
     return selected
 
-def match_with_synonyms(value, options):
-    if not value:
+def match_with_synonyms(user_val, data_options):
+    if not user_val or not data_options:
         return False
 
-    value = value.lower()
+    user_val = user_val.lower().strip()
+    # If the scholarship is open to everyone
+    if "any" in [opt.lower() for opt in data_options]:
+        return True
 
-    # split input (important)
-    parts = re.split(r"[ /,-]+", value)
+    # Standardize common variations (e.g., B.Tech -> btech)
+    user_val_clean = re.sub(r'[^a-z0-9]', '', user_val)
 
-    for opt in options:
-        opt = opt.lower()
-
-        # direct match
-        if any(part in opt for part in parts):
+    for opt in data_options:
+        opt_clean = re.sub(r'[^a-z0-9]', '', opt.lower())
+        
+        # 1. Direct or Substring Match (e.g., "btech" in "btech engineering")
+        if user_val_clean in opt_clean or opt_clean in user_val_clean:
             return True
 
-        # synonym match
-        for key, vals in SYNONYMS.items():
-            if key in parts:
-                if any(v in opt for v in vals):
+        # 2. Synonym lookup
+        for category, keywords in SYNONYMS.items():
+            if user_val_clean == category or user_val_clean in keywords:
+                if any(k in opt_clean for k in keywords) or category in opt_clean:
                     return True
-
     return False
 # ---------------------- HELPERS ----------------------
 def extract_amount_score(text):
@@ -278,58 +284,33 @@ def recommend(user_profile=None, user_input=None, top_n=5, page=1,limit=10,filte
                 if not s.get("isAlways", False):
                     continue
                                                
-            # if user_profile.get("gender"):
-            #     if s.get("gender", "").lower() not in [user_profile["gender"].lower(), "any"]:
-            #         continue
-
-            # if user_profile.get("location_pref") == "india":
-            #     if s.get("location", "").lower() not in ["india", "any"]:
-            #         continue
-
-            # if user_profile.get("level"):
-            #     if user_profile["level"] not in [lvl.lower() for lvl in s.get("level", [])]:
-            #         continue
-
-            # if user_profile.get("field"):
-            #     if "any" not in [f.lower() for f in s.get("field", [])]:
-            #         if user_profile["field"] not in [f.lower() for f in s.get("field", [])]:
-            #             continue
 
         filtered_indices.append(i)
 
     # -------- Profile Score --------
     def profile_score(s, user):
-        if not user:
-            return 0
-
+        if not user: return 0
         score = 0
+        
+        # Field Matching
         fields = [f.lower() for f in s.get("field", [])]
-        levels = [l.lower() for l in s.get("level", [])]
-           
-        eligibility = " ".join(s.get("eligibility", [])).lower()
-        desc = s.get("description", "").lower()
-
         if match_with_synonyms(user.get("field"), fields):
+            # Give more points for a SPECIFIC match than a GENERAL "Any" match
+            score += 4 if "any" not in fields else 2
+
+        # Level Matching
+        levels = [l.lower() for l in s.get("level", [])]
+        if match_with_synonyms(user.get("level"), levels):
             score += 3
 
-        # Level (handle pg/phd)
-        if match_with_synonyms(user.get("level"), levels):
-            score += 2
-        #Aspiration (handle research)
-        if user.get("aspiration"):
-            if match_with_synonyms(user.get("aspiration"), [desc]):
-                score += 3
-         # Category (PwD)
-        if user.get("categories"):
-            if match_with_synonyms(user.get("categories"), [eligibility]):
-                score += 2
-
-        # Location
-        if user.get("location_pref") == "india":
-            if "india" in s.get("location", "").lower():
-                score += 2
-       
-       
+        # Gender Check (Crucial for Women-only scholarships)
+        user_gender = user.get("gender", "").lower()
+        scholarship_gender = s.get("gender", "any").lower()
+        if scholarship_gender != "any":
+            if user_gender == scholarship_gender:
+                score += 5  # High priority because these are very specific
+            else:
+                score -= 10 # Hard penalty if gender doesn't match
 
         return score
 
